@@ -27,6 +27,6 @@ func (match *Match) wonBy(winner *Player) {
 	loser.losses += 1
 }
 
-func Between(firstPlayer *Player, secondPlayer *Player) Match {
-	return Match{firstPlayer, secondPlayer, nil}
+func Between(firstPlayer *Player, secondPlayer *Player) *Match {
+	return &Match{firstPlayer, secondPlayer, nil}
 }
