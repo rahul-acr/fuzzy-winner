@@ -17,11 +17,9 @@ type Match struct {
 func (match *Match) wonBy(winner *Player) {
 	var loser *Player
 	if winner == match.firstPlayer {
-		match.winner = match.firstPlayer
-		loser = match.secondPlayer
+		match.winner, loser = match.firstPlayer, match.secondPlayer
 	} else {
-		match.winner = match.secondPlayer
-		loser = match.firstPlayer
+		match.winner, loser = match.secondPlayer, match.firstPlayer
 	}
 	winner.wins += 1
 	loser.losses += 1
