@@ -5,8 +5,7 @@ import "testing"
 func TestWinsShouldIncrementWhenPlayerWinsAMatch(t *testing.T) {
 	parikshit := &Player{1, 0, 0}
 	rahul := &Player{2, 0, 0}
-	match := Between(parikshit, rahul)
-	match.wonBy(parikshit)
+	parikshit.winAgainst(rahul)
 	if parikshit.wins != 1 {
 		t.Fatalf("Parikshit should have 1 win")
 	}
@@ -15,8 +14,7 @@ func TestWinsShouldIncrementWhenPlayerWinsAMatch(t *testing.T) {
 func TestLossesShouldIncrementWhenPlayerLosesAMatch(t *testing.T) {
 	parikshit := &Player{1, 0, 0}
 	rahul := &Player{2, 0, 0}
-	match := Between(parikshit, rahul)
-	match.wonBy(rahul)
+	rahul.winAgainst(parikshit)
 	if parikshit.losses != 1 {
 		t.Fatalf("Parikshit should have 1 loss")
 	}
