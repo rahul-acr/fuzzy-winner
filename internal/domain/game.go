@@ -8,7 +8,7 @@ type Player struct {
 	losses int
 }
 
-func (player *Player) winAgainst(loser *Player) {
-	player.wins += 1
+func (winner *Player) winAgainst(loser *Player) {
+	winner.wins += 1
 	loser.losses += 1
 }
