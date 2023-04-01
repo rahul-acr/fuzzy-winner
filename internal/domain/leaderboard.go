@@ -3,7 +3,7 @@ package domain
 import "sort"
 
 type LeaderBoard struct {
-	players []Player
+	players []*Player
 }
 
 var leaderBoard LeaderBoard
@@ -20,7 +20,7 @@ func (board *LeaderBoard) Swap(i, j int) {
 	board.players[i], board.players[j] = board.players[j], board.players[i]
 }
 
-func (board *LeaderBoard) Init(players []Player) {
+func (board *LeaderBoard) Init(players []*Player) {
 	board.players = players
 }
 
