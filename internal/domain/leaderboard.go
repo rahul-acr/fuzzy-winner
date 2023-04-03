@@ -6,7 +6,7 @@ type LeaderBoard struct {
 	players []*Player
 }
 
-var leaderBoard LeaderBoard
+var TtLeaderBoard LeaderBoard
 
 func (board *LeaderBoard) Len() int {
 	return len(board.players)
@@ -35,4 +35,13 @@ func (board *LeaderBoard) GetRank(player *Player) int {
 		}
 	}
 	return -1
+}
+
+func (board *LeaderBoard) FindPlayer(playerId PlayerId) *Player {
+	for i := 0; i < board.Len(); i++ {
+		if playerId == board.players[i].id {
+			return board.players[i]
+		}
+	}
+	return nil
 }
