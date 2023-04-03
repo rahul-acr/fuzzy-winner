@@ -22,9 +22,10 @@ func (board *LeaderBoard) Swap(i, j int) {
 
 func (board *LeaderBoard) Init(players []*Player) {
 	board.players = players
+	board.refresh()
 }
 
-func (board *LeaderBoard) Update() {
+func (board *LeaderBoard) refresh() {
 	sort.Sort(board)
 }
 

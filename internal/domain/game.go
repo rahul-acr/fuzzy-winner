@@ -11,7 +11,7 @@ type Player struct {
 func (winner *Player) WinAgainst(loser *Player) {
 	winner.wins += 1
 	loser.losses += 1
-	TtLeaderBoard.Update()
+	TtLeaderBoard.refresh()
 }
 
 func CreatePlayer(id PlayerId, wins, looses int) *Player {

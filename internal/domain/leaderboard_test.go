@@ -50,3 +50,17 @@ func TestParikshitsRankShouldBe2WhenHarunScoresMoreWinsThanHim(t *testing.T) {
 		t.Fatalf("Parikshit's rank should be 2")
 	}
 }
+
+func TestLeaderBoardReuseOldMatchData(t *testing.T) {
+	parikshit := &Player{id: 1, wins: 2}
+	rahul := &Player{id: 2, wins: 3}
+
+	TtLeaderBoard.Init([]*Player{parikshit, rahul})
+
+	if TtLeaderBoard.GetRank(parikshit) != 2 {
+		t.Fatalf("Parikshit's rank should be 2")
+	}
+	if TtLeaderBoard.GetRank(rahul) != 1 {
+		t.Fatalf("Rahul's rank should be 1")
+	}
+}
