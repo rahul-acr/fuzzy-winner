@@ -13,7 +13,3 @@ func (winner *Player) WinAgainst(loser *Player) {
 	loser.losses += 1
 	leaderBoard.Update()
 }
-
-func (player *Player) GetRank() int {
-	return leaderBoard.GetRank(player)
-}
