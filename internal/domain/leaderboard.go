@@ -6,7 +6,11 @@ type LeaderBoard struct {
 	players []*Player
 }
 
-var TtLeaderBoard LeaderBoard
+var leaderBoard LeaderBoard
+
+func GetLeaderBoard() *LeaderBoard {
+	return &leaderBoard
+}
 
 func (board *LeaderBoard) Len() int {
 	return len(board.players)

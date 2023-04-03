@@ -28,16 +28,18 @@ func AddMatch(match *Match) {
 
 func GetPlayerDetails(playerId int) *PlayerDetails {
 	player := findPlayerById(playerId)
+	leaderBoard := domain.GetLeaderBoard()
 	return &PlayerDetails{
 		Id:     playerId,
 		Wins:   player.Wins(),
 		Losses: player.Losses(),
-		Rank:   domain.TtLeaderBoard.GetRank(player),
+		Rank:   leaderBoard.GetRank(player),
 	}
 }
 
 func findPlayerById(id int) *domain.Player {
 	playerId := domain.PlayerId(id)
-	player := domain.TtLeaderBoard.FindPlayer(playerId)
+	leaderBoard := domain.GetLeaderBoard()
+	player := leaderBoard.FindPlayer(playerId)
 	return player
 }
