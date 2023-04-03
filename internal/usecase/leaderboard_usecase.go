@@ -8,7 +8,14 @@ type Match struct {
 	win           bool
 }
 
-func AddMatch(match Match) {
+type PlayerDetails struct {
+	Id     int
+	Wins   int
+	Losses int
+	Rank   int
+}
+
+func AddMatch(match *Match) {
 	thisPlayer := findPlayerById(match.thisPlayerId)
 	otherPlayer := findPlayerById(match.otherPlayerId)
 
@@ -16,6 +23,16 @@ func AddMatch(match Match) {
 		thisPlayer.WinAgainst(otherPlayer)
 	} else {
 		otherPlayer.WinAgainst(thisPlayer)
+	}
+}
+
+func GetPlayerDetails(playerId int) *PlayerDetails {
+	player := findPlayerById(playerId)
+	return &PlayerDetails{
+		Id:     playerId,
+		Wins:   player.Wins(),
+		Losses: player.Losses(),
+		Rank:   domain.TtLeaderBoard.GetRank(player),
 	}
 }
 
