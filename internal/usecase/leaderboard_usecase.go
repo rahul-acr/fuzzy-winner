@@ -3,9 +3,9 @@ package usecase
 import "tv/quick-bat/internal/domain"
 
 type Match struct {
-	thisPlayerId  int
-	otherPlayerId int
-	win           bool
+	ThisPlayerId  int  `json:"thisPlayerId"`
+	OtherPlayerId int  `json:"otherPlayerId"`
+	Win           bool `json:"win"`
 }
 
 type PlayerDetails struct {
@@ -16,10 +16,10 @@ type PlayerDetails struct {
 }
 
 func AddMatch(match *Match) {
-	thisPlayer := findPlayerById(match.thisPlayerId)
-	otherPlayer := findPlayerById(match.otherPlayerId)
+	thisPlayer := findPlayerById(match.ThisPlayerId)
+	otherPlayer := findPlayerById(match.OtherPlayerId)
 
-	if match.win {
+	if match.Win {
 		thisPlayer.WinAgainst(otherPlayer)
 	} else {
 		otherPlayer.WinAgainst(thisPlayer)
