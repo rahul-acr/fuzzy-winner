@@ -1,6 +1,9 @@
 package usecase
 
-import "tv/quick-bat/internal/domain"
+import (
+	"tv/quick-bat/internal/db"
+	"tv/quick-bat/internal/domain"
+)
 
 type Match struct {
 	ThisPlayerId  int  `json:"thisPlayerId"`
@@ -24,6 +27,9 @@ func AddMatch(match *Match) {
 	} else {
 		otherPlayer.WinAgainst(thisPlayer)
 	}
+
+	db.UpdatePlayer(thisPlayer)
+	db.UpdatePlayer(otherPlayer)
 }
 
 func GetPlayerDetails(playerId int) *PlayerDetails {

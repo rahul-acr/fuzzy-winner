@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	"strconv"
-
+	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
 	"tv/quick-bat/internal/usecase"
 
@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	router := gin.Default()
+	db.CreateConnection()
+	defer db.CloseConnection()
 
-	domain.GetLeaderBoard().Init([]*domain.Player{
-		domain.CreatePlayer(1, 0, 0),
-		domain.CreatePlayer(2, 0, 0),
-	})
+	domain.GetLeaderBoard().Init(db.FetchAllPlayers())
+
+	router := gin.Default()
 
 	router.GET("/players/:id", func(ctx *gin.Context) {
 		playerId, _ := strconv.Atoi(ctx.Param("id"))

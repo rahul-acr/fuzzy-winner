@@ -25,3 +25,7 @@ func (player *Player) Wins() int {
 func (player *Player) Losses() int {
 	return player.losses
 }
+
+func (player *Player) Id() PlayerId {
+	return player.id
+}
