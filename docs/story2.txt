@@ -1,0 +1,3 @@
+As a user I should be able to challenge another player for a match, so that I can earn more points.
+As a user I should be able to see all the open challenges, so that I can accept and agree on a schedule.
+As a user I should be able to enter result of a challenge, the ranking board should reflect once I enter the result.
