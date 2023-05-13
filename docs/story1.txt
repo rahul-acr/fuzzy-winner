@@ -1,3 +1,3 @@
-​As a player, I should be able to add a match I played and its result, so that is can track my ranking.
+As a player, I should be able to add a match I played and its result, so that it can track my ranking.
  
 As a player, I should be able to see my overall ranking in the system.

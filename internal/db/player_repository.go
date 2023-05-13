@@ -7,13 +7,13 @@ import (
 )
 
 type PlayerRecord struct {
-	Id     int `bson:"id"`
+	Id     int `bson:"_id"`
 	Losses int `bson:"losses"`
 	Wins   int `bson:"wins"`
 }
 
 func UpdatePlayer(player *domain.Player) {
-	filter := bson.D{{"id", player.Id()}}
+	filter := bson.D{{"_id", player.Id()}}
 	update := bson.D{{"$set", bson.D{
 		{"wins", player.Wins()},
 		{"losses", player.Losses()},
