@@ -8,6 +8,3 @@ type Challenge struct {
 	isAccepted bool
 	time       time.Time
 }
-type ChallengeRepository interface {
-	Add(challenge *Challenge)
-}

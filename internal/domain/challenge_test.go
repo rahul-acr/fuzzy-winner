@@ -28,7 +28,7 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 
 	challenge := rahul.challenge(parikshit)
 
-	datetime, err := time.Parse(time.DateTime, "2023-01-02 15:04:05")
+	datetime, err := time.Parse(time.RFC3339, "2023-01-02T15:04:00+05:30")
 	if err != nil {
 		t.Fatal(err)
 	}
