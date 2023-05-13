@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"tv/quick-bat/internal/domain"
 )
 
@@ -18,14 +19,14 @@ func UpdatePlayer(player *domain.Player) {
 		{"wins", player.Wins()},
 		{"losses", player.Losses()},
 	}}}
-	_, err := client.Database("quickbat").Collection("players").UpdateOne(context.TODO(), filter, update)
+	_, err := getCollection().UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func FetchAllPlayers() []*domain.Player {
-	cursor, err := client.Database("quickbat").Collection("players").Find(context.TODO(), bson.D{})
+	cursor, err := getCollection().Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil
 	}
@@ -44,4 +45,8 @@ func FetchAllPlayers() []*domain.Player {
 	}
 
 	return players
+}
+
+func getCollection() *mongo.Collection {
+	return client.Database("quickbat").Collection("players")
 }

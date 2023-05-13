@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type PlayerId int
 
 type Player struct {
@@ -28,4 +30,14 @@ func (player *Player) Losses() int {
 
 func (player *Player) Id() PlayerId {
 	return player.id
+}
+
+func (player *Player) challenge(otherPlayer *Player) *Challenge {
+	challenge := Challenge{challenger: player, opponent: otherPlayer}
+	return &challenge
+}
+
+func (player *Player) accept(challenge *Challenge, agreedTime time.Time) {
+	challenge.isAccepted = true
+	challenge.time = agreedTime
 }
