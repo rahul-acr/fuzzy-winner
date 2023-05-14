@@ -26,20 +26,34 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 	parikshit := &Player{id: 1}
 	rahul := &Player{id: 2}
 
+	matchTime := time.Now().Add(time.Hour * 2)
 	challenge := rahul.challenge(parikshit)
-
-	datetime, err := time.Parse(time.RFC3339, "2023-01-02T15:04:00+05:30")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	parikshit.accept(challenge, datetime)
+	parikshit.accept(challenge, matchTime)
 
 	if !challenge.isAccepted {
 		t.Fatalf("Challenge should be accepted")
 	}
-	if challenge.time != datetime {
+	if challenge.time != matchTime {
 		t.Fatalf("date time does not match")
 	}
 
+}
+
+func TestLeaderBoardShouldUpdateWhenParikshitWon(t *testing.T) {
+	parikshit := &Player{id: 1}
+	rahul := &Player{id: 2}
+	leaderBoard.Init([]*Player{parikshit, rahul})
+
+	matchTime := time.Now().Add(time.Hour * 2)
+	challenge := rahul.challenge(parikshit)
+	parikshit.accept(challenge, matchTime)
+
+	challenge.wonBy(parikshit)
+
+	if leaderBoard.GetRank(parikshit) != 1 {
+		t.Fatalf("Parikshit's rank should be 1")
+	}
+	if leaderBoard.GetRank(rahul) != 2 {
+		t.Fatalf("Rahul's rank should be 2")
+	}
 }
