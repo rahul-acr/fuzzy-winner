@@ -15,7 +15,10 @@ func main() {
 	defer db.CloseConnection()
 
 	domain.GetLeaderBoard().Init(db.FetchAllPlayers())
-
+	domain.OnPlayerChange = func(p *domain.Player) {
+		db.UpdatePlayer(p)
+	}
+	
 	router := gin.Default()
 
 	router.GET("/players/:id", func(ctx *gin.Context) {
