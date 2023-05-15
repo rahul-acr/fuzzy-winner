@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type PlayerId int
 
@@ -13,6 +15,8 @@ type Player struct {
 func (player *Player) WinAgainst(loser *Player) {
 	player.wins += 1
 	loser.losses += 1
+	OnPlayerChange(player)
+	OnPlayerChange(loser)
 	leaderBoard.refresh()
 }
 
@@ -33,11 +37,13 @@ func (player *Player) Id() PlayerId {
 }
 
 func (player *Player) challenge(otherPlayer *Player) *Challenge {
-	challenge := Challenge{challenger: player, opponent: otherPlayer}
-	return &challenge
+	challenge := &Challenge{challenger: player, opponent: otherPlayer}
+	onChallengeCreate(challenge)
+	return challenge
 }
 
 func (player *Player) accept(challenge *Challenge, agreedTime time.Time) {
-	challenge.isAccepted = true
-	challenge.time = agreedTime
+	challenge.acceptBy(player, agreedTime)
 }
+
+var OnPlayerChange = func(p *Player) {}

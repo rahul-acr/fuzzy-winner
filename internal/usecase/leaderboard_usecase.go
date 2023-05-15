@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
 )
 
@@ -28,8 +27,8 @@ func AddMatch(match *Match) {
 		otherPlayer.WinAgainst(thisPlayer)
 	}
 
-	db.UpdatePlayer(thisPlayer)
-	db.UpdatePlayer(otherPlayer)
+	//db.UpdatePlayer(thisPlayer)
+	//db.UpdatePlayer(otherPlayer)
 }
 
 func GetPlayerDetails(playerId int) *PlayerDetails {
