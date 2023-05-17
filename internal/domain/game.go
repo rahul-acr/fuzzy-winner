@@ -20,7 +20,7 @@ func (player *Player) WinAgainst(loser *Player) {
 	leaderBoard.refresh()
 }
 
-func CreatePlayer(id PlayerId, wins, looses int) *Player {
+func NewPlayer(id PlayerId, wins, looses int) *Player {
 	return &Player{id, wins, looses}
 }
 

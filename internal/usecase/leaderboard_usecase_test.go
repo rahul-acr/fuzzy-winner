@@ -6,8 +6,8 @@ import (
 )
 
 func TestParikshitShouldHave1WinAndRahulHave1LossWhenParikshitAddsAWinMatchAgainstRahul(t *testing.T) {
-	parikshit := domain.CreatePlayer(1, 0, 0)
-	rahul := domain.CreatePlayer(2, 0, 0)
+	parikshit := domain.NewPlayer(1, 0, 0)
+	rahul := domain.NewPlayer(2, 0, 0)
 
 	domain.GetLeaderBoard().Init([]*domain.Player{parikshit, rahul})
 	match := Match{1, 2, true}
@@ -19,8 +19,8 @@ func TestParikshitShouldHave1WinAndRahulHave1LossWhenParikshitAddsAWinMatchAgain
 }
 
 func TestRahulShouldHave1WinAndParikshitHave1LossWhenParikshitAddsALoseMatchAgainstRahul(t *testing.T) {
-	parikshit := domain.CreatePlayer(1, 0, 0)
-	rahul := domain.CreatePlayer(2, 0, 0)
+	parikshit := domain.NewPlayer(1, 0, 0)
+	rahul := domain.NewPlayer(2, 0, 0)
 
 	domain.GetLeaderBoard().Init([]*domain.Player{parikshit, rahul})
 	match := Match{1, 2, false}
@@ -32,8 +32,8 @@ func TestRahulShouldHave1WinAndParikshitHave1LossWhenParikshitAddsALoseMatchAgai
 }
 
 func TestShouldGivePlayerDetails(t *testing.T) {
-	parikshit := domain.CreatePlayer(1, 0, 0)
-	rahul := domain.CreatePlayer(2, 0, 0)
+	parikshit := domain.NewPlayer(1, 0, 0)
+	rahul := domain.NewPlayer(2, 0, 0)
 
 	domain.GetLeaderBoard().Init([]*domain.Player{parikshit, rahul})
 
