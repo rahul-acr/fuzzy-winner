@@ -44,7 +44,7 @@ func (r *PlayerRepository) FetchAll() []*domain.Player {
 	}
 	var players []*domain.Player
 	for _, playerRecord := range playerRecords {
-		players = append(players, domain.CreatePlayer(
+		players = append(players, domain.NewPlayer(
 			domain.PlayerId(playerRecord.Id),
 			playerRecord.Wins,
 			playerRecord.Losses),
