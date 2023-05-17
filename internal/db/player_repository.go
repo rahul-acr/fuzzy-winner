@@ -13,20 +13,27 @@ type PlayerRecord struct {
 	Wins   int `bson:"wins"`
 }
 
-func UpdatePlayer(player *domain.Player) {
-	filter := bson.D{{"_id", player.Id()}}
+type PlayerRepository struct {
+	collection *mongo.Collection
+}
+
+func NewPlayerRepository(collection *mongo.Collection) *PlayerRepository {
+	return &PlayerRepository{collection: collection}
+}
+
+func (r *PlayerRepository) Update(player *domain.Player) {
 	update := bson.D{{"$set", bson.D{
 		{"wins", player.Wins()},
 		{"losses", player.Losses()},
 	}}}
-	_, err := getCollection().UpdateOne(context.TODO(), filter, update)
+	_, err := r.collection.UpdateByID(context.TODO(), player.Id(), update)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func FetchAllPlayers() []*domain.Player {
-	cursor, err := getCollection().Find(context.TODO(), bson.D{})
+func (r *PlayerRepository) FetchAll() []*domain.Player {
+	cursor, err := r.collection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil
 	}
@@ -45,8 +52,4 @@ func FetchAllPlayers() []*domain.Player {
 	}
 
 	return players
-}
-
-func getCollection() *mongo.Collection {
-	return client.Database("quickbat").Collection("players")
 }
