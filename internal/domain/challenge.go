@@ -3,13 +3,15 @@ package domain
 import "time"
 
 type Challenge struct {
+	Id         interface{}
 	challenger *Player
 	opponent   *Player
+	winner     *Player
 	isAccepted bool
 	time       time.Time
 }
 
-func (c *Challenge) wonBy(winner *Player) {
+func (c *Challenge) WonBy(winner *Player) {
 	var loser *Player
 	if winner.id == c.challenger.id {
 		loser = c.opponent
@@ -17,7 +19,8 @@ func (c *Challenge) wonBy(winner *Player) {
 		loser = c.challenger
 	}
 	winner.WinAgainst(loser)
-	onChallengeChange(c)
+	c.winner = winner
+	OnChallengeChange(c)
 }
 
 func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
@@ -26,8 +29,28 @@ func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
 	}
 	c.isAccepted = true
 	c.time = agreedTime
-	onChallengeChange(c)
+	OnChallengeChange(c)
 }
 
-var onChallengeCreate = func(c *Challenge) {}
-var onChallengeChange = func(c *Challenge) {}
+func (c *Challenge) Challenger() *Player {
+	return c.challenger
+}
+
+func (c *Challenge) Opponent() *Player {
+	return c.opponent
+}
+
+func (c *Challenge) Winner() *Player {
+	return c.winner
+}
+
+func (c *Challenge) IsAccepted() bool {
+	return c.isAccepted
+}
+
+func (c *Challenge) Time() time.Time {
+	return c.time
+}
+
+var OnChallengeCreate = func(c *Challenge) {}
+var OnChallengeChange = func(c *Challenge) {}

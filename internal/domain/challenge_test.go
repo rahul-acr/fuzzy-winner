@@ -9,7 +9,7 @@ func TestRahulShouldBeAbleToChallengeParikshit(t *testing.T) {
 	parikshit := &Player{id: 1}
 	rahul := &Player{id: 2}
 
-	challenge := rahul.challenge(parikshit)
+	challenge := rahul.Challenge(parikshit)
 
 	if challenge == nil {
 		t.Fatalf("Challenge should be added")
@@ -27,8 +27,8 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 	rahul := &Player{id: 2}
 
 	matchTime := time.Now().Add(time.Hour * 2)
-	challenge := rahul.challenge(parikshit)
-	parikshit.accept(challenge, matchTime)
+	challenge := rahul.Challenge(parikshit)
+	parikshit.Accept(challenge, matchTime)
 
 	if !challenge.isAccepted {
 		t.Fatalf("Challenge should be accepted")
@@ -45,10 +45,10 @@ func TestLeaderBoardShouldUpdateWhenParikshitWon(t *testing.T) {
 	leaderBoard.Init([]*Player{parikshit, rahul})
 
 	matchTime := time.Now().Add(time.Hour * 2)
-	challenge := rahul.challenge(parikshit)
-	parikshit.accept(challenge, matchTime)
+	challenge := rahul.Challenge(parikshit)
+	parikshit.Accept(challenge, matchTime)
 
-	challenge.wonBy(parikshit)
+	challenge.WonBy(parikshit)
 
 	if leaderBoard.GetRank(parikshit) != 1 {
 		t.Fatalf("Parikshit's rank should be 1")

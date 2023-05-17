@@ -8,7 +8,7 @@ import (
 
 var client *mongo.Client
 
-func CreateConnection() {
+func CreateConnection() *mongo.Client {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI("mongodb://localhost:27017").SetServerAPIOptions(serverAPI)
 	// Create a new client and connect to the server
@@ -17,6 +17,7 @@ func CreateConnection() {
 	if err != nil {
 		panic(err)
 	}
+	return client
 }
 
 func CloseConnection() {
