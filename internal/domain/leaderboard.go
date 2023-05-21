@@ -6,10 +6,10 @@ type LeaderBoard struct {
 	players []*Player
 }
 
-var leaderBoard LeaderBoard
+var MainLeaderBoard *LeaderBoard
 
 func GetLeaderBoard() *LeaderBoard {
-	return &leaderBoard
+	return MainLeaderBoard
 }
 
 func (board *LeaderBoard) Len() int {
@@ -24,9 +24,10 @@ func (board *LeaderBoard) Swap(i, j int) {
 	board.players[i], board.players[j] = board.players[j], board.players[i]
 }
 
-func (board *LeaderBoard) Init(players []*Player) {
-	board.players = players
+func NewLeaderBoard(players []*Player) *LeaderBoard {
+	board := LeaderBoard{players: players}
 	board.refresh()
+	return &board
 }
 
 func (board *LeaderBoard) refresh() {

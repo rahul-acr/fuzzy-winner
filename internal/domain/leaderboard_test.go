@@ -8,14 +8,14 @@ func TestParikshitShouldHaveRank1AndRahulHaveRank2WhenParikshitWinsAMatchAgainst
 	parikshit := &Player{id: 1}
 	rahul := &Player{id: 2}
 
-	leaderBoard.Init([]*Player{parikshit, rahul})
+	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul})
 
 	parikshit.WinAgainst(rahul)
 
-	if leaderBoard.GetRank(parikshit) != 1 {
+	if MainLeaderBoard.GetRank(parikshit) != 1 {
 		t.Fatalf("Parikshit's rank should be 1")
 	}
-	if leaderBoard.GetRank(rahul) != 2 {
+	if MainLeaderBoard.GetRank(rahul) != 2 {
 		t.Fatalf("Rahul's rank should be 2")
 	}
 }
@@ -24,13 +24,13 @@ func TestRahulShouldHaveRank1WhenHeOvertakesParikshitInWins(t *testing.T) {
 	parikshit := &Player{id: 1}
 	rahul := &Player{id: 2}
 
-	leaderBoard.Init([]*Player{parikshit, rahul})
+	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul})
 
 	parikshit.WinAgainst(rahul)
 	rahul.WinAgainst(parikshit)
 	rahul.WinAgainst(parikshit)
 
-	if leaderBoard.GetRank(rahul) != 1 {
+	if MainLeaderBoard.GetRank(rahul) != 1 {
 		t.Fatalf("Rahul's rank should be 1")
 	}
 }
@@ -40,13 +40,13 @@ func TestParikshitsRankShouldBe2WhenHarunScoresMoreWinsThanHim(t *testing.T) {
 	rahul := &Player{id: 2}
 	harun := &Player{id: 3}
 
-	leaderBoard.Init([]*Player{parikshit, rahul, harun})
+	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul, harun})
 
 	parikshit.WinAgainst(rahul)
 	harun.WinAgainst(parikshit)
 	harun.WinAgainst(rahul)
 
-	if leaderBoard.GetRank(parikshit) != 2 {
+	if MainLeaderBoard.GetRank(parikshit) != 2 {
 		t.Fatalf("Parikshit's rank should be 2")
 	}
 }
@@ -55,12 +55,12 @@ func TestLeaderBoardReuseOldMatchData(t *testing.T) {
 	parikshit := &Player{id: 1, wins: 2}
 	rahul := &Player{id: 2, wins: 3}
 
-	leaderBoard.Init([]*Player{parikshit, rahul})
+	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul})
 
-	if leaderBoard.GetRank(parikshit) != 2 {
+	if MainLeaderBoard.GetRank(parikshit) != 2 {
 		t.Fatalf("Parikshit's rank should be 2")
 	}
-	if leaderBoard.GetRank(rahul) != 1 {
+	if MainLeaderBoard.GetRank(rahul) != 1 {
 		t.Fatalf("Rahul's rank should be 1")
 	}
 }

@@ -14,7 +14,7 @@ func main() {
 	challengeRepo := db.NewChallengeRepository(database.Collection("challenges"))
 	playerRepo := db.NewPlayerRepository(database.Collection("players"))
 
-	domain.GetLeaderBoard().Init(playerRepo.FetchAll())
+	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 	domain.OnPlayerChange = playerRepo.Update
 
 	domain.OnChallengeCreate = challengeRepo.Add
