@@ -19,13 +19,15 @@ func main() {
 
 	domain.OnChallengeCreate = challengeRepo.Add
 	domain.OnChallengeChange = challengeRepo.Update
+	domain.LoadChallenge = challengeRepo.Find
 
 	player1 := domain.GetLeaderBoard().FindPlayer(1)
 	player2 := domain.GetLeaderBoard().FindPlayer(2)
 
 	challenge := player1.Challenge(player2)
 
-	player2.Accept(challenge, time.Now())
+	now := time.Now()
+	player2.Accept(challenge, now)
 
 	challenge.WonBy(player2)
 
