@@ -46,3 +46,7 @@ func (c *ChallengeRepository) Add(challenge *domain.Challenge) {
 	}
 	challenge.Id = result.InsertedID
 }
+
+func (c *ChallengeRepository) Find(challengeId interface{}) *domain.Challenge {
+	return nil
+}

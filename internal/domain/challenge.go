@@ -8,7 +8,7 @@ type Challenge struct {
 	opponent   *Player
 	winner     *Player
 	isAccepted bool
-	time       time.Time
+	time       *time.Time
 }
 
 func (c *Challenge) WonBy(winner *Player) {
@@ -28,7 +28,7 @@ func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
 		panic("challenge can not be accepted by someone other than opponent")
 	}
 	c.isAccepted = true
-	c.time = agreedTime
+	c.time = &agreedTime
 	OnChallengeChange(c)
 }
 
@@ -48,9 +48,10 @@ func (c *Challenge) IsAccepted() bool {
 	return c.isAccepted
 }
 
-func (c *Challenge) Time() time.Time {
+func (c *Challenge) Time() *time.Time {
 	return c.time
 }
 
 var OnChallengeCreate = func(c *Challenge) {}
 var OnChallengeChange = func(c *Challenge) {}
+var LoadChallenge = func(challengeId interface{}) *Challenge { panic("Hook is not linked") }
