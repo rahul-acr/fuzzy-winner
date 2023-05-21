@@ -6,17 +6,17 @@ import (
 )
 
 type Challenge struct {
-	Challenger int `json:"challengerId"`
-	Opponent   int `json:"opponentId"`
+	ChallengerId int `json:"challengerId"`
+	OpponentId   int `json:"opponentId"`
 }
 
 func CreateChallenge(c Challenge) {
-	challenger := findPlayerById(c.Challenger)
-	opponent := findPlayerById(c.Opponent)
+	challenger := findPlayerById(c.ChallengerId)
+	opponent := findPlayerById(c.OpponentId)
 	challenger.Challenge(opponent)
 }
 
-func AcceptChallenge(challengeId int, opponentId int, matchTime time.Time) {
+func AcceptChallenge(challengeId interface{}, opponentId int, matchTime time.Time) {
 	challenge := domain.LoadChallenge(challengeId)
 	opponent := findPlayerById(opponentId)
 	opponent.Accept(challenge, matchTime)

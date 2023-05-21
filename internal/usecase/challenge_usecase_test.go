@@ -18,8 +18,8 @@ func TestChallengeShouldBeCreatedWhenRahulChallengesParikshit(t *testing.T) {
 	}
 
 	CreateChallenge(Challenge{
-		Challenger: int(rahul.Id()),
-		Opponent:   int(parikshit.Id()),
+		ChallengerId: int(rahul.Id()),
+		OpponentId:   int(parikshit.Id()),
 	})
 
 	a := assert.New(t)
@@ -50,8 +50,8 @@ func TestParikshitShouldBeAbleToAcceptTheChallenge(t *testing.T) {
 	}
 
 	CreateChallenge(Challenge{
-		Challenger: int(rahul.Id()),
-		Opponent:   int(parikshit.Id()),
+		ChallengerId: int(rahul.Id()),
+		OpponentId:   int(parikshit.Id()),
 	})
 
 	matchTime := time.Now().Add(time.Hour * 2)
