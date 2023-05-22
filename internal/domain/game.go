@@ -36,10 +36,8 @@ func (player *Player) Id() PlayerId {
 	return player.id
 }
 
-func (player *Player) Challenge(otherPlayer *Player) *Challenge {
-	challenge := &Challenge{challenger: player, opponent: otherPlayer}
-	OnChallengeCreate(challenge)
-	return challenge
+func (player *Player) Challenge(opponent *Player) *Challenge {
+	return NewChallenge(player, opponent)
 }
 
 func (player *Player) Accept(challenge *Challenge, agreedTime time.Time) {
