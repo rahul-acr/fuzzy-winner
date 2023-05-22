@@ -11,6 +11,12 @@ type Challenge struct {
 	time       *time.Time
 }
 
+func NewChallenge(challenger *Player, opponent *Player) *Challenge {
+	challenge := &Challenge{challenger: challenger, opponent: opponent}
+	OnChallengeCreate(challenge)
+	return challenge
+}
+
 func (c *Challenge) WonBy(winner *Player) {
 	var loser *Player
 	if winner.id == c.challenger.id {
@@ -54,4 +60,5 @@ func (c *Challenge) Time() *time.Time {
 
 var OnChallengeCreate = func(c *Challenge) {}
 var OnChallengeChange = func(c *Challenge) {}
+
 var LoadChallenge = func(challengeId interface{}) *Challenge { panic("Hook is not linked") }
