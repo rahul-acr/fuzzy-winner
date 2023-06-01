@@ -15,8 +15,9 @@ type Player struct {
 func (player *Player) WinAgainst(loser *Player) {
 	player.wins += 1
 	loser.losses += 1
-	OnPlayerChange(player)
-	OnPlayerChange(loser)
+
+	publishPlayerChange(player)
+	publishPlayerChange(loser)
 	MainLeaderBoard.refresh()
 }
 
@@ -43,5 +44,3 @@ func (player *Player) Challenge(opponent *Player) *Challenge {
 func (player *Player) Accept(challenge *Challenge, agreedTime time.Time) {
 	challenge.acceptBy(player, agreedTime)
 }
-
-var OnPlayerChange = func(p *Player) {}

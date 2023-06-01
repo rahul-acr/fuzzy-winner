@@ -13,7 +13,7 @@ type Challenge struct {
 
 func NewChallenge(challenger *Player, opponent *Player) *Challenge {
 	challenge := &Challenge{challenger: challenger, opponent: opponent}
-	OnChallengeCreate(challenge)
+	publishChallengeCreate(challenge)
 	return challenge
 }
 
@@ -26,7 +26,7 @@ func (c *Challenge) WonBy(winner *Player) {
 	}
 	winner.WinAgainst(loser)
 	c.winner = winner
-	OnChallengeChange(c)
+	publishChallengeUpdate(c)
 }
 
 func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
@@ -35,7 +35,7 @@ func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
 	}
 	c.isAccepted = true
 	c.time = &agreedTime
-	OnChallengeChange(c)
+	publishChallengeUpdate(c)
 }
 
 func (c *Challenge) Challenger() *Player {
@@ -57,8 +57,3 @@ func (c *Challenge) IsAccepted() bool {
 func (c *Challenge) Time() *time.Time {
 	return c.time
 }
-
-var OnChallengeCreate = func(c *Challenge) {}
-var OnChallengeChange = func(c *Challenge) {}
-
-var LoadChallenge = func(challengeId interface{}) *Challenge { panic("Hook is not linked") }
