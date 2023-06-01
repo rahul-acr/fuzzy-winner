@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
-	"tv/quick-bat/internal/events"
 	"tv/quick-bat/internal/usecase"
 )
 
@@ -22,20 +21,9 @@ func main() {
 
 	usecase.LoadChallenge = challengeRepo.Find
 
-	events.Listen("challengeCreate", func(event events.Event) {
-		challenge := event.Payload.(*domain.Challenge)
-		challengeRepo.Add(challenge)
-	})
-
-	events.Listen("challengeUpdate", func(event events.Event) {
-		challenge := event.Payload.(*domain.Challenge)
-		challengeRepo.Update(challenge)
-	})
-
-	events.Listen("playerUpdate", func(event events.Event) {
-		player := event.Payload.(*domain.Player)
-		playerRepo.Update(player)
-	})
+	domain.AddChallengeCreateListener(challengeRepo.Add)
+	domain.AddChallengeChangeListener(challengeRepo.Update)
+	domain.AddPlayerChangeListener(playerRepo.Update)
 
 	router := gin.Default()
 
