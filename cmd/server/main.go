@@ -4,6 +4,8 @@ import (
 	"time"
 	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
+	"tv/quick-bat/internal/events"
+	"tv/quick-bat/internal/usecase"
 )
 
 func main() {
@@ -15,11 +17,23 @@ func main() {
 	playerRepo := db.NewPlayerRepository(database.Collection("players"))
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
-	domain.OnPlayerChange = playerRepo.Update
 
-	domain.OnChallengeCreate = challengeRepo.Add
-	domain.OnChallengeChange = challengeRepo.Update
-	domain.LoadChallenge = challengeRepo.Find
+	usecase.LoadChallenge = challengeRepo.Find
+
+	events.Listen("challengeCreate", func(event events.Event) {
+		challenge := event.Payload.(*domain.Challenge)
+		challengeRepo.Add(challenge)
+	})
+
+	events.Listen("challengeUpdate", func(event events.Event) {
+		challenge := event.Payload.(*domain.Challenge)
+		challengeRepo.Update(challenge)
+	})
+
+	events.Listen("playerUpdate", func(event events.Event) {
+		player := event.Payload.(*domain.Player)
+		playerRepo.Update(player)
+	})
 
 	player1 := domain.GetLeaderBoard().FindPlayer(1)
 	player2 := domain.GetLeaderBoard().FindPlayer(2)

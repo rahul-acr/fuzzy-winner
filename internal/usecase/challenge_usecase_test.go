@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 	"tv/quick-bat/internal/domain"
+	"tv/quick-bat/internal/events"
 )
 
 func TestChallengeShouldBeCreatedWhenRahulChallengesParikshit(t *testing.T) {
@@ -13,9 +14,10 @@ func TestChallengeShouldBeCreatedWhenRahulChallengesParikshit(t *testing.T) {
 	domain.MainLeaderBoard = domain.NewLeaderBoard([]*domain.Player{parikshit, rahul})
 
 	var challenge *domain.Challenge
-	domain.OnChallengeCreate = func(c *domain.Challenge) {
-		challenge = c
-	}
+
+	events.Listen("challengeCreate", func(event events.Event) {
+		challenge = event.Payload.(*domain.Challenge)
+	})
 
 	CreateChallenge(Challenge{
 		ChallengerId: int(rahul.Id()),
@@ -37,12 +39,13 @@ func TestParikshitShouldBeAbleToAcceptTheChallenge(t *testing.T) {
 
 	const createdChallengeId = 1
 	var challenge *domain.Challenge
-	domain.OnChallengeCreate = func(c *domain.Challenge) {
-		c.Id = createdChallengeId
-		challenge = c
-	}
 
-	domain.LoadChallenge = func(challengeId interface{}) *domain.Challenge {
+	events.Listen("challengeCreate", func(event events.Event) {
+		challenge = event.Payload.(*domain.Challenge)
+		challenge.Id = createdChallengeId
+	})
+
+	LoadChallenge = func(challengeId interface{}) *domain.Challenge {
 		if challengeId == createdChallengeId {
 			return challenge
 		}
