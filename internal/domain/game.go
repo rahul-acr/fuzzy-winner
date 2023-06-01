@@ -16,8 +16,8 @@ func (player *Player) WinAgainst(loser *Player) {
 	player.wins += 1
 	loser.losses += 1
 
-	publishPlayerChange(player)
-	publishPlayerChange(loser)
+	publishPlayerUpdate(player)
+	publishPlayerUpdate(loser)
 	MainLeaderBoard.refresh()
 }
 
