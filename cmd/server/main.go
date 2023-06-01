@@ -1,7 +1,9 @@
 package main
 
 import (
-	"time"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
 	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
 	"tv/quick-bat/internal/events"
@@ -35,30 +37,20 @@ func main() {
 		playerRepo.Update(player)
 	})
 
-	player1 := domain.GetLeaderBoard().FindPlayer(1)
-	player2 := domain.GetLeaderBoard().FindPlayer(2)
+	router := gin.Default()
 
-	challenge := player1.Challenge(player2)
+	router.GET("/players/:id", func(ctx *gin.Context) {
+		playerId, _ := strconv.Atoi(ctx.Param("id"))
+		playerDetails := usecase.GetPlayerDetails(playerId)
+		ctx.JSON(http.StatusOK, &playerDetails)
+	})
 
-	now := time.Now()
-	player2.Accept(challenge, now)
+	router.POST("/matches", func(ctx *gin.Context) {
+		var match usecase.Match
+		ctx.BindJSON(&match)
+		usecase.AddMatch(&match)
+		ctx.Status(http.StatusCreated)
+	})
 
-	challenge.WonBy(player2)
-
-	//router := gin.Default()
-	//
-	//router.GET("/players/:id", func(ctx *gin.Context) {
-	//	playerId, _ := strconv.Atoi(ctx.Param("id"))
-	//	playerDetails := usecase.GetPlayerDetails(playerId)
-	//	ctx.JSON(http.StatusOK, &playerDetails)
-	//})
-	//
-	//router.POST("/matches", func(ctx *gin.Context) {
-	//	var match usecase.Match
-	//	ctx.BindJSON(&match)
-	//	usecase.AddMatch(&match)
-	//	ctx.Status(http.StatusCreated)
-	//})
-	//
-	//router.Run("localhost:8080")
+	router.Run("localhost:8080")
 }
