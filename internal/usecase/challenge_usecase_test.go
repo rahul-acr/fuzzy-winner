@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -33,6 +34,8 @@ func TestChallengeShouldBeCreatedWhenRahulChallengesParikshit(t *testing.T) {
 }
 
 func TestParikshitShouldBeAbleToAcceptTheChallenge(t *testing.T) {
+	a := assert.New(t)
+
 	rahul := domain.NewPlayer(1, 1, 1)
 	parikshit := domain.NewPlayer(2, 1, 1)
 	domain.MainLeaderBoard = domain.NewLeaderBoard([]*domain.Player{parikshit, rahul})
@@ -45,11 +48,11 @@ func TestParikshitShouldBeAbleToAcceptTheChallenge(t *testing.T) {
 		challenge.Id = createdChallengeId
 	})
 
-	LoadChallenge = func(challengeId interface{}) *domain.Challenge {
+	LoadChallenge = func(challengeId interface{}) (*domain.Challenge, error) {
 		if challengeId == createdChallengeId {
-			return challenge
+			return challenge, nil
 		}
-		return nil
+		return nil, errors.New("unknown challenge id")
 	}
 
 	CreateChallenge(Challenge{
@@ -57,10 +60,15 @@ func TestParikshitShouldBeAbleToAcceptTheChallenge(t *testing.T) {
 		OpponentId:   int(parikshit.Id()),
 	})
 
-	matchTime := time.Now().Add(time.Hour * 2)
-	AcceptChallenge(createdChallengeId, int(parikshit.Id()), matchTime)
+	matchTime, err := time.Parse(time.RFC3339, "2023-07-05T10:45:26Z")
+	a.Nil(err)
 
-	a := assert.New(t)
+	err = AcceptChallenge(createdChallengeId, ChallengeAccept{
+		int(parikshit.Id()),
+		matchTime.Format(time.RFC3339),
+	})
+
+	a.Nil(err)
 	a.NotNil(challenge)
 	a.True(challenge.IsAccepted())
 	a.Equal(matchTime, *challenge.Time())

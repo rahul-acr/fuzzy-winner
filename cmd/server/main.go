@@ -14,8 +14,8 @@ func main() {
 	defer db.CloseConnection()
 
 	database := client.Database("quickbat")
-	challengeRepo := db.NewChallengeRepository(database.Collection("challenges"))
 	playerRepo := db.NewPlayerRepository(database.Collection("players"))
+	challengeRepo := db.NewChallengeRepository(database.Collection("challenges"), playerRepo)
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 
@@ -35,10 +35,38 @@ func main() {
 
 	router.POST("/matches", func(ctx *gin.Context) {
 		var match usecase.Match
-		ctx.BindJSON(&match)
+		err := ctx.BindJSON(&match)
+		if err != nil {
+			return
+		}
 		usecase.AddMatch(&match)
 		ctx.Status(http.StatusCreated)
 	})
 
-	router.Run("localhost:8080")
+	router.POST("/challenges", func(ctx *gin.Context) {
+		var challenge usecase.Challenge
+		err := ctx.BindJSON(&challenge)
+		if err != nil {
+			return
+		}
+		usecase.CreateChallenge(challenge)
+	})
+
+	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {
+		challengeId := ctx.Param("id")
+		var challengeAccept usecase.ChallengeAccept
+		err := ctx.BindJSON(&challengeAccept)
+		if err != nil {
+			return
+		}
+		err = usecase.AcceptChallenge(challengeId, challengeAccept)
+		if err != nil {
+			return
+		}
+	})
+
+	err := router.Run("localhost:8080")
+	if err != nil {
+		panic(err)
+	}
 }
