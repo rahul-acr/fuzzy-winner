@@ -65,7 +65,7 @@ func TestParikshitShouldBeAbleToAcceptTheChallenge(t *testing.T) {
 
 	err = AcceptChallenge(createdChallengeId, ChallengeAccept{
 		int(parikshit.Id()),
-		matchTime.Format(time.RFC3339),
+		matchTime,
 	})
 
 	a.Nil(err)

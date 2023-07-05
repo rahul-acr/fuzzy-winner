@@ -28,7 +28,11 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/players/:id", func(ctx *gin.Context) {
-		playerId, _ := strconv.Atoi(ctx.Param("id"))
+		playerId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return
+		}
 		playerDetails := usecase.GetPlayerDetails(playerId)
 		ctx.JSON(http.StatusOK, &playerDetails)
 	})
@@ -37,6 +41,7 @@ func main() {
 		var match usecase.Match
 		err := ctx.BindJSON(&match)
 		if err != nil {
+			ctx.Status(http.StatusBadRequest)
 			return
 		}
 		usecase.AddMatch(&match)
@@ -47,6 +52,7 @@ func main() {
 		var challenge usecase.Challenge
 		err := ctx.BindJSON(&challenge)
 		if err != nil {
+			ctx.Status(http.StatusBadRequest)
 			return
 		}
 		usecase.CreateChallenge(challenge)
@@ -57,11 +63,12 @@ func main() {
 		var challengeAccept usecase.ChallengeAccept
 		err := ctx.BindJSON(&challengeAccept)
 		if err != nil {
+			ctx.Status(http.StatusBadRequest)
 			return
 		}
 		err = usecase.AcceptChallenge(challengeId, challengeAccept)
 		if err != nil {
-			return
+			ctx.Status(http.StatusInternalServerError)
 		}
 	})
 

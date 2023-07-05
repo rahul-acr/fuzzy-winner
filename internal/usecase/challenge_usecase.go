@@ -11,8 +11,8 @@ type Challenge struct {
 }
 
 type ChallengeAccept struct {
-	OpponentId int    `json:"opponentId"`
-	MatchTime  string `json:"matchTime"`
+	OpponentId int       `json:"opponentId"`
+	MatchTime  time.Time `json:"matchTime"`
 }
 
 var LoadChallenge = func(challengeId interface{}) (*domain.Challenge, error) { panic("Hook is not linked") }
@@ -28,10 +28,6 @@ func AcceptChallenge(challengeId interface{}, accept ChallengeAccept) error {
 	if err != nil {
 		return err
 	}
-	matchTime, err := time.Parse(time.RFC3339, accept.MatchTime)
-	if err != nil {
-		return err
-	}
-	challenge.Opponent().Accept(challenge, matchTime)
+	challenge.Opponent().Accept(challenge, accept.MatchTime)
 	return nil
 }
