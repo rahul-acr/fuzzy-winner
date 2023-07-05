@@ -57,3 +57,14 @@ func (c *Challenge) IsAccepted() bool {
 func (c *Challenge) Time() *time.Time {
 	return c.time
 }
+
+func LoadChallenge(id interface{}, challenger *Player, opponent *Player, winner *Player, isAccepted bool, time *time.Time) *Challenge {
+	return &Challenge{
+		Id:         id,
+		challenger: challenger,
+		opponent:   opponent,
+		winner:     winner,
+		isAccepted: isAccepted,
+		time:       time,
+	}
+}

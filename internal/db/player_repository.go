@@ -53,3 +53,20 @@ func (r *PlayerRepository) FetchAll() []*domain.Player {
 
 	return players
 }
+
+func (r *PlayerRepository) FindById(id int) (*domain.Player, error) {
+	//objectId, err := primitive.ObjectIDFromHex(strconv.Itoa(id))
+	//if err != nil {
+	//	return nil, err
+	//}
+	var playerRecord PlayerRecord
+	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&playerRecord)
+	if err != nil {
+		return nil, err
+	}
+	return domain.NewPlayer(
+		domain.PlayerId(playerRecord.Id),
+		playerRecord.Wins,
+		playerRecord.Losses,
+	), nil
+}
