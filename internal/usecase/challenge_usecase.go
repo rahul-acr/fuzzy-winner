@@ -28,6 +28,7 @@ func AcceptChallenge(challengeId interface{}, accept ChallengeAccept) error {
 	if err != nil {
 		return err
 	}
-	challenge.Opponent().Accept(challenge, accept.MatchTime)
+	opponent := challenge.Opponent()
+	opponent.Accept(challenge, accept.MatchTime)
 	return nil
 }

@@ -39,8 +39,7 @@ func main() {
 
 	router.POST("/matches", func(ctx *gin.Context) {
 		var match usecase.Match
-		err := ctx.BindJSON(&match)
-		if err != nil {
+		if err := ctx.BindJSON(&match); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
@@ -50,8 +49,7 @@ func main() {
 
 	router.POST("/challenges", func(ctx *gin.Context) {
 		var challenge usecase.Challenge
-		err := ctx.BindJSON(&challenge)
-		if err != nil {
+		if err := ctx.BindJSON(&challenge); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
@@ -61,13 +59,11 @@ func main() {
 	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {
 		challengeId := ctx.Param("id")
 		var challengeAccept usecase.ChallengeAccept
-		err := ctx.BindJSON(&challengeAccept)
-		if err != nil {
+		if err := ctx.BindJSON(&challengeAccept); err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		err = usecase.AcceptChallenge(challengeId, challengeAccept)
-		if err != nil {
+		if err := usecase.AcceptChallenge(challengeId, challengeAccept); err != nil {
 			ctx.Status(http.StatusInternalServerError)
 		}
 	})
