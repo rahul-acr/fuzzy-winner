@@ -13,7 +13,7 @@ type Challenge struct {
 
 func NewChallenge(challenger *Player, opponent *Player) *Challenge {
 	challenge := &Challenge{challenger: challenger, opponent: opponent}
-	publishChallengeCreate(challenge)
+	publishChallengeCreate(*challenge)
 	return challenge
 }
 
@@ -26,7 +26,7 @@ func (c *Challenge) WonBy(winner *Player) {
 	}
 	winner.WinAgainst(loser)
 	c.winner = winner
-	publishChallengeUpdate(c)
+	publishChallengeUpdate(*c)
 }
 
 func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
@@ -35,7 +35,7 @@ func (c *Challenge) acceptBy(acceptedBy *Player, agreedTime time.Time) {
 	}
 	c.isAccepted = true
 	c.time = &agreedTime
-	publishChallengeUpdate(c)
+	publishChallengeUpdate(*c)
 }
 
 func (c *Challenge) Challenger() *Player {

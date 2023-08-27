@@ -21,7 +21,7 @@ func NewChallengeRepository(
 	return &ChallengeRepository{collection: collection, playerRepository: playerRepository}
 }
 
-func (c *ChallengeRepository) Update(challenge *domain.Challenge) {
+func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	update := bson.D{
 		{"isAccepted", challenge.IsAccepted()},
 		{"time", challenge.Time()},
@@ -39,7 +39,7 @@ func (c *ChallengeRepository) Update(challenge *domain.Challenge) {
 	}
 }
 
-func (c *ChallengeRepository) Add(challenge *domain.Challenge) {
+func (c *ChallengeRepository) Add(challenge domain.Challenge) {
 	result, err := c.collection.InsertOne(context.TODO(), ChallengeRecord{
 		Id:           primitive.NewObjectID(),
 		ChallengerId: int(challenge.Challenger().Id()),

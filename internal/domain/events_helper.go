@@ -6,11 +6,11 @@ func publishPlayerUpdate(player *Player) {
 	events.Publish("playerUpdate", player)
 }
 
-func publishChallengeCreate(challenge *Challenge) {
+func publishChallengeCreate(challenge Challenge) {
 	events.Publish("challengeCreate", challenge)
 }
 
-func publishChallengeUpdate(challenge *Challenge) {
+func publishChallengeUpdate(challenge Challenge) {
 	events.Publish("challengeUpdate", challenge)
 }
 
@@ -20,14 +20,14 @@ func AddPlayerChangeListener(listener func(player *Player)) {
 	})
 }
 
-func AddChallengeCreateListener(listener func(player *Challenge)) {
+func AddChallengeCreateListener(listener func(challenge Challenge)) {
 	events.Listen("challengeCreate", func(event events.Event) {
-		listener(event.Payload.(*Challenge))
+		listener(event.Payload.(Challenge))
 	})
 }
 
-func AddChallengeChangeListener(listener func(player *Challenge)) {
+func AddChallengeChangeListener(listener func(player Challenge)) {
 	events.Listen("challengeUpdate", func(event events.Event) {
-		listener(event.Payload.(*Challenge))
+		listener(event.Payload.(Challenge))
 	})
 }
