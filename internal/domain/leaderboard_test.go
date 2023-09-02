@@ -2,6 +2,7 @@ package domain
 
 import (
 	"testing"
+	"tv/quick-bat/internal/events"
 )
 
 func TestParikshitShouldHaveRank1AndRahulHaveRank2WhenParikshitWinsAMatchAgainstRahul(t *testing.T) {
@@ -9,6 +10,7 @@ func TestParikshitShouldHaveRank1AndRahulHaveRank2WhenParikshitWinsAMatchAgainst
 	rahul := Player{id: 2}
 
 	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
+	defer events.Clear("playerUpdate")
 
 	parikshit.WinAgainst(&rahul)
 
@@ -25,6 +27,7 @@ func TestRahulShouldHaveRank1WhenHeOvertakesParikshitInWins(t *testing.T) {
 	rahul := Player{id: 2}
 
 	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
+	defer events.Clear("playerUpdate")
 
 	parikshit.WinAgainst(&rahul)
 	rahul.WinAgainst(&parikshit)
@@ -41,6 +44,7 @@ func TestParikshitsRankShouldBe2WhenHarunScoresMoreWinsThanHim(t *testing.T) {
 	harun := Player{id: 3}
 
 	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul, harun})
+	defer events.Clear("playerUpdate")
 
 	parikshit.WinAgainst(&rahul)
 	harun.WinAgainst(&parikshit)
@@ -56,6 +60,7 @@ func TestLeaderBoardReuseOldMatchData(t *testing.T) {
 	rahul := Player{id: 2, wins: 3}
 
 	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
+	defer events.Clear("playerUpdate")
 
 	if MainLeaderBoard.GetRank(parikshit) != 2 {
 		t.Fatalf("Parikshit's rank should be 2")

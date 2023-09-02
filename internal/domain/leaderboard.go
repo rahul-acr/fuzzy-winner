@@ -1,6 +1,9 @@
 package domain
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 type LeaderBoard struct {
 	players []Player
@@ -45,23 +48,25 @@ func (board *LeaderBoard) GetRank(player Player) int {
 }
 
 func (board *LeaderBoard) FindPlayer(playerId PlayerId) (Player, error) {
-	for i := 0; i < board.Len(); i++ {
-		if playerId == board.players[i].id {
-			return board.players[i], nil
-		}
+	player := board.findPlayerById(playerId)
+	if player != nil {
+		return *player, nil
 	}
-	return Player{}, nil
+	return Player{}, fmt.Errorf("Player not found with id %d", playerId)
 }
 
+func (board *LeaderBoard) UpdatePlayer(player Player) {
+	playerOnBoard := board.findPlayerById(player.id)
+	playerOnBoard.wins = player.wins
+	playerOnBoard.losses = player.losses
+	board.refresh()
+}
 
-func (board *LeaderBoard) UpdatePlayer(player Player){
+func (board *LeaderBoard) findPlayerById(playerId PlayerId) *Player {
 	for i := 0; i < board.Len(); i++ {
-		playerOnBoard := &board.players[i]
-		if player.id == playerOnBoard.id {
-			playerOnBoard.wins = player.wins
-			playerOnBoard.losses = player.losses
-			board.refresh()
-			break
+		if playerId == board.players[i].id {
+			return &board.players[i]
 		}
 	}
+	return nil
 }
