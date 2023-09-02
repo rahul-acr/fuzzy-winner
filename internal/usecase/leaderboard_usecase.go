@@ -17,34 +17,42 @@ type PlayerDetails struct {
 	Rank   int
 }
 
-func AddMatch(match *Match) {
-	thisPlayer := findPlayerById(match.ThisPlayerId)
-	otherPlayer := findPlayerById(match.OtherPlayerId)
-
-	if match.Win {
-		thisPlayer.WinAgainst(otherPlayer)
-	} else {
-		otherPlayer.WinAgainst(thisPlayer)
+func AddMatch(match *Match) error {
+	thisPlayer, err := findPlayerById(match.ThisPlayerId)
+	if err != nil {
+		return err
 	}
 
-	//db.UpdatePlayer(thisPlayer)
-	//db.UpdatePlayer(otherPlayer)
+	otherPlayer, err := findPlayerById(match.OtherPlayerId)
+	if err != nil {
+		return err
+	}
+
+	if match.Win {
+		thisPlayer.WinAgainst(&otherPlayer)
+	} else {
+		otherPlayer.WinAgainst(&thisPlayer)
+	}
+
+	return nil
 }
 
-func GetPlayerDetails(playerId int) *PlayerDetails {
-	player := findPlayerById(playerId)
+func GetPlayerDetails(playerId int) (PlayerDetails, error) {
+	player, err := findPlayerById(playerId)
+	if err!=nil {
+		return PlayerDetails{}, err
+	}
 	leaderBoard := domain.GetLeaderBoard()
-	return &PlayerDetails{
+	return PlayerDetails{
 		Id:     playerId,
 		Wins:   player.Wins(),
 		Losses: player.Losses(),
 		Rank:   leaderBoard.GetRank(player),
-	}
+	}, nil
 }
 
-func findPlayerById(id int) *domain.Player {
+func findPlayerById(id int) (domain.Player, error) {
 	playerId := domain.PlayerId(id)
 	leaderBoard := domain.GetLeaderBoard()
-	player := leaderBoard.FindPlayer(playerId)
-	return player
+	return leaderBoard.FindPlayer(playerId)
 }

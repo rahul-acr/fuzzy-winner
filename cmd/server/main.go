@@ -22,7 +22,8 @@ func main() {
 
 	domain.AddChallengeCreateListener(challengeRepo.Add)
 	domain.AddChallengeChangeListener(challengeRepo.Update)
-	domain.AddPlayerChangeListener(playerRepo.Update)
+	domain.AddPlayerUpdateListener(playerRepo.Update)
+	domain.AddPlayerUpdateListener(domain.MainLeaderBoard.UpdatePlayer)
 
 	playerManager := usecase.PlayerManager{ PlayerRepository: *playerRepo}
 	challengerManager := usecase.ChallengeManager{ChallengeRepository: *challengeRepo, PlayerManager: playerManager}
@@ -34,7 +35,11 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		playerDetails := usecase.GetPlayerDetails(playerId)
+		playerDetails, err := usecase.GetPlayerDetails(playerId)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
 		ctx.JSON(http.StatusOK, &playerDetails)
 	})
 

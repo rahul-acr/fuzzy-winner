@@ -5,14 +5,6 @@ type Event struct {
 	Payload interface{}
 }
 
-//func (receiver *Event) Name() string {
-//	return receiver.name
-//}
-//
-//func (receiver *Event) Payload() interface{} {
-//	return receiver.Payload
-//}
-
 type listeners []Listener
 
 type Listener func(event Event)
@@ -27,4 +19,9 @@ func Publish(eventName string, payload interface{}) {
 
 func Listen(eventName string, listener Listener) {
 	listenersMap[eventName] = append(listenersMap[eventName], listener)
+}
+
+
+func Clear(eventName string) {
+	listenersMap[eventName] = make([]Listener, 0)
 }

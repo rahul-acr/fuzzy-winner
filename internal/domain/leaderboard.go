@@ -3,7 +3,7 @@ package domain
 import "sort"
 
 type LeaderBoard struct {
-	players []*Player
+	players []Player
 }
 
 var MainLeaderBoard *LeaderBoard
@@ -24,9 +24,10 @@ func (board *LeaderBoard) Swap(i, j int) {
 	board.players[i], board.players[j] = board.players[j], board.players[i]
 }
 
-func NewLeaderBoard(players []*Player) *LeaderBoard {
+func NewLeaderBoard(players []Player) *LeaderBoard {
 	board := LeaderBoard{players: players}
 	board.refresh()
+	AddPlayerUpdateListener(board.UpdatePlayer)
 	return &board
 }
 
@@ -34,7 +35,7 @@ func (board *LeaderBoard) refresh() {
 	sort.Sort(board)
 }
 
-func (board *LeaderBoard) GetRank(player *Player) int {
+func (board *LeaderBoard) GetRank(player Player) int {
 	for i := 0; i < board.Len(); i++ {
 		if player.id == board.players[i].id {
 			return i + 1
@@ -43,11 +44,24 @@ func (board *LeaderBoard) GetRank(player *Player) int {
 	return -1
 }
 
-func (board *LeaderBoard) FindPlayer(playerId PlayerId) *Player {
+func (board *LeaderBoard) FindPlayer(playerId PlayerId) (Player, error) {
 	for i := 0; i < board.Len(); i++ {
 		if playerId == board.players[i].id {
-			return board.players[i]
+			return board.players[i], nil
 		}
 	}
-	return nil
+	return Player{}, nil
+}
+
+
+func (board *LeaderBoard) UpdatePlayer(player Player){
+	for i := 0; i < board.Len(); i++ {
+		playerOnBoard := &board.players[i]
+		if player.id == playerOnBoard.id {
+			playerOnBoard.wins = player.wins
+			playerOnBoard.losses = player.losses
+			board.refresh()
+			break
+		}
+	}
 }

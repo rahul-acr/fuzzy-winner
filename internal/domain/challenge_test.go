@@ -42,7 +42,7 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 func TestLeaderBoardShouldUpdateWhenParikshitWon(t *testing.T) {
 	parikshit := Player{id: 1}
 	rahul := Player{id: 2}
-	MainLeaderBoard = NewLeaderBoard([]*Player{&parikshit, &rahul})
+	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
 
 	matchTime := time.Now().Add(time.Hour * 2)
 	challenge := rahul.Challenge(parikshit)
@@ -50,10 +50,10 @@ func TestLeaderBoardShouldUpdateWhenParikshitWon(t *testing.T) {
 
 	challenge.winBy(parikshit)
 
-	if MainLeaderBoard.GetRank(&parikshit) != 1 {
+	if MainLeaderBoard.GetRank(parikshit) != 1 {
 		t.Fatalf("Parikshit's rank should be 1")
 	}
-	if MainLeaderBoard.GetRank(&rahul) != 2 {
+	if MainLeaderBoard.GetRank(rahul) != 2 {
 		t.Fatalf("Rahul's rank should be 2")
 	}
 }

@@ -5,12 +5,12 @@ import (
 )
 
 func TestParikshitShouldHaveRank1AndRahulHaveRank2WhenParikshitWinsAMatchAgainstRahul(t *testing.T) {
-	parikshit := &Player{id: 1}
-	rahul := &Player{id: 2}
+	parikshit := Player{id: 1}
+	rahul := Player{id: 2}
 
-	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul})
+	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
 
-	parikshit.WinAgainst(rahul)
+	parikshit.WinAgainst(&rahul)
 
 	if MainLeaderBoard.GetRank(parikshit) != 1 {
 		t.Fatalf("Parikshit's rank should be 1")
@@ -21,14 +21,14 @@ func TestParikshitShouldHaveRank1AndRahulHaveRank2WhenParikshitWinsAMatchAgainst
 }
 
 func TestRahulShouldHaveRank1WhenHeOvertakesParikshitInWins(t *testing.T) {
-	parikshit := &Player{id: 1}
-	rahul := &Player{id: 2}
+	parikshit := Player{id: 1}
+	rahul := Player{id: 2}
 
-	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul})
+	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
 
-	parikshit.WinAgainst(rahul)
-	rahul.WinAgainst(parikshit)
-	rahul.WinAgainst(parikshit)
+	parikshit.WinAgainst(&rahul)
+	rahul.WinAgainst(&parikshit)
+	rahul.WinAgainst(&parikshit)
 
 	if MainLeaderBoard.GetRank(rahul) != 1 {
 		t.Fatalf("Rahul's rank should be 1")
@@ -36,15 +36,15 @@ func TestRahulShouldHaveRank1WhenHeOvertakesParikshitInWins(t *testing.T) {
 }
 
 func TestParikshitsRankShouldBe2WhenHarunScoresMoreWinsThanHim(t *testing.T) {
-	parikshit := &Player{id: 1}
-	rahul := &Player{id: 2}
-	harun := &Player{id: 3}
+	parikshit := Player{id: 1}
+	rahul := Player{id: 2}
+	harun := Player{id: 3}
 
-	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul, harun})
+	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul, harun})
 
-	parikshit.WinAgainst(rahul)
-	harun.WinAgainst(parikshit)
-	harun.WinAgainst(rahul)
+	parikshit.WinAgainst(&rahul)
+	harun.WinAgainst(&parikshit)
+	harun.WinAgainst(&rahul)
 
 	if MainLeaderBoard.GetRank(parikshit) != 2 {
 		t.Fatalf("Parikshit's rank should be 2")
@@ -52,10 +52,10 @@ func TestParikshitsRankShouldBe2WhenHarunScoresMoreWinsThanHim(t *testing.T) {
 }
 
 func TestLeaderBoardReuseOldMatchData(t *testing.T) {
-	parikshit := &Player{id: 1, wins: 2}
-	rahul := &Player{id: 2, wins: 3}
+	parikshit := Player{id: 1, wins: 2}
+	rahul := Player{id: 2, wins: 3}
 
-	MainLeaderBoard = NewLeaderBoard([]*Player{parikshit, rahul})
+	MainLeaderBoard = NewLeaderBoard([]Player{parikshit, rahul})
 
 	if MainLeaderBoard.GetRank(parikshit) != 2 {
 		t.Fatalf("Parikshit's rank should be 2")

@@ -2,9 +2,10 @@ package db
 
 import (
 	"context"
+	"tv/quick-bat/internal/domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"tv/quick-bat/internal/domain"
 )
 
 type PlayerRecord struct {
@@ -21,7 +22,7 @@ func NewPlayerRepository(collection *mongo.Collection) *PlayerRepository {
 	return &PlayerRepository{collection: collection}
 }
 
-func (r *PlayerRepository) Update(player *domain.Player) {
+func (r *PlayerRepository) Update(player domain.Player) {
 	update := bson.D{{Key: "$set", Value: bson.D{
 		{Key: "wins", Value: player.Wins()},
 		{Key: "losses", Value: player.Losses()},
@@ -32,7 +33,7 @@ func (r *PlayerRepository) Update(player *domain.Player) {
 	}
 }
 
-func (r *PlayerRepository) FetchAll() []*domain.Player {
+func (r *PlayerRepository) FetchAll() []domain.Player {
 	cursor, err := r.collection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil
@@ -42,9 +43,9 @@ func (r *PlayerRepository) FetchAll() []*domain.Player {
 	if err = cursor.All(context.TODO(), &playerRecords); err != nil {
 		panic(err)
 	}
-	var players []*domain.Player
+	var players []domain.Player
 	for _, playerRecord := range playerRecords {
-		players = append(players, domain.NewPlayer(
+		players = append(players, domain.NewPlayer2(
 			domain.PlayerId(playerRecord.Id),
 			playerRecord.Wins,
 			playerRecord.Losses),
