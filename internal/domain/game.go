@@ -20,11 +20,7 @@ func (player *Player) WinAgainst(loser *Player) {
 	publishPlayerUpdate(*loser)
 }
 
-func NewPlayer(id PlayerId, wins, looses int) *Player {
-	return &Player{id, wins, looses}
-}
-
-func NewPlayer2(id PlayerId, wins, looses int) Player {
+func NewPlayer(id PlayerId, wins, looses int) Player {
 	return Player{id, wins, looses}
 }
 

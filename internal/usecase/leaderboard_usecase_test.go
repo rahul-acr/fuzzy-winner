@@ -9,8 +9,8 @@ func TestParikshitShouldHave1WinAndRahulHave1LossWhenParikshitAddsAWinMatchAgain
 	var parikshitId domain.PlayerId = 1
 	var rahulId domain.PlayerId = 2
 	domain.MainLeaderBoard = domain.NewLeaderBoard([]domain.Player{
-		domain.NewPlayer2(parikshitId, 0, 0),
-		domain.NewPlayer2(rahulId, 0, 0),
+		domain.NewPlayer(parikshitId, 0, 0),
+		domain.NewPlayer(rahulId, 0, 0),
 	})
 	match := Match{1, 2, true}
 	err := AddMatch(&match)
@@ -34,8 +34,8 @@ func TestRahulShouldHave1WinAndParikshitHave1LossWhenParikshitAddsALoseMatchAgai
 	var parikshitId domain.PlayerId = 1
 	var rahulId domain.PlayerId = 2
 	domain.MainLeaderBoard = domain.NewLeaderBoard([]domain.Player{
-		domain.NewPlayer2(parikshitId, 0, 0),
-		domain.NewPlayer2(rahulId, 0, 0),
+		domain.NewPlayer(parikshitId, 0, 0),
+		domain.NewPlayer(rahulId, 0, 0),
 	})
 	match := Match{1, 2, false}
 	err := AddMatch(&match)
@@ -50,15 +50,15 @@ func TestRahulShouldHave1WinAndParikshitHave1LossWhenParikshitAddsALoseMatchAgai
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	if parikshit.Losses() != 1 || rahul.Wins() != 1 {
 		t.Fatalf("Parikshit should have 1 loss and Rahul have 1 win")
 	}
 }
 
 func TestShouldGivePlayerDetails(t *testing.T) {
-	parikshit := domain.NewPlayer2(1, 0, 0)
-	rahul := domain.NewPlayer2(2, 0, 0)
+	parikshit := domain.NewPlayer(1, 0, 0)
+	rahul := domain.NewPlayer(2, 0, 0)
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard([]domain.Player{parikshit, rahul})
 
