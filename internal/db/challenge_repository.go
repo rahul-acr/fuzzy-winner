@@ -2,11 +2,12 @@ package db
 
 import (
 	"context"
+	"time"
+	"tv/quick-bat/internal/domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"time"
-	"tv/quick-bat/internal/domain"
 )
 
 type ChallengeRepository struct {
@@ -23,16 +24,17 @@ func NewChallengeRepository(
 
 func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	update := bson.D{
-		{"isAccepted", challenge.IsAccepted()},
-		{"time", challenge.Time()},
+		{Key: "isAccepted", Value: challenge.IsAccepted()},
+		{Key: "time", Value: challenge.Time()},
 	}
-	if challenge.Winner() != nil {
-		update = append(update, bson.E{Key: "winner", Value: challenge.Winner().Id()})
+	winner := challenge.Winner()
+	if (winner != domain.Player{}) {
+		update = append(update, bson.E{Key: "winner", Value: winner.Id()})
 	}
 	_, err := c.collection.UpdateByID(
 		context.TODO(),
-		challenge.Id,
-		bson.D{{"$set", update}},
+		challenge.GetId(),
+		bson.D{{Key: "$set", Value: update}},
 	)
 	if err != nil {
 		panic(err)
@@ -40,48 +42,33 @@ func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 }
 
 func (c *ChallengeRepository) Add(challenge domain.Challenge) {
+	opponent := challenge.Opponent()
+	challenger := challenge.Challenger()
+
 	result, err := c.collection.InsertOne(context.TODO(), ChallengeRecord{
 		Id:           primitive.NewObjectID(),
-		ChallengerId: int(challenge.Challenger().Id()),
-		OpponentId:   int(challenge.Opponent().Id()),
+		ChallengerId: int(challenger.Id()),
+		OpponentId:   int(opponent.Id()),
 	})
 	if err != nil {
 		panic(err)
 	}
-	challenge.Id = result.InsertedID
+	challenge.SetId(result.InsertedID)
 }
 
-func (c *ChallengeRepository) Find(challengeId interface{}) (*domain.Challenge, error) {
+
+func (c *ChallengeRepository) FindChallenge(challengeId any) (ChallengeRecord, error) {
 	hex := challengeId.(string)
 	id, err := primitive.ObjectIDFromHex(hex)
 	if err != nil {
-		return nil, err
+		return ChallengeRecord{}, err
 	}
 	var record ChallengeRecord
 	err = c.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&record)
 	if err != nil {
-		return nil, err
+		return ChallengeRecord{}, err
 	}
-	challenger, err := c.playerRepository.FindById(record.ChallengerId)
-	if err != nil {
-		return nil, err
-	}
-	opponent, err := c.playerRepository.FindById(record.OpponentId)
-	if err != nil {
-		return nil, err
-	}
-	var winner *domain.Player
-	if record.WinnerId != 0 {
-		winner, err = c.playerRepository.FindById(record.WinnerId)
-		if err != nil {
-			return nil, err
-		}
-	}
-	//matchTime, err := time.Parse(time.RFC3339, record.Time)
-	//if err != nil {
-	//	return nil, err
-	//}
-	return domain.LoadChallenge(record.Id, challenger, opponent, winner, record.IsAccepted, record.Time), nil
+	return record, nil
 }
 
 type ChallengeRecord struct {

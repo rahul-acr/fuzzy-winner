@@ -22,9 +22,9 @@ func NewPlayerRepository(collection *mongo.Collection) *PlayerRepository {
 }
 
 func (r *PlayerRepository) Update(player *domain.Player) {
-	update := bson.D{{"$set", bson.D{
-		{"wins", player.Wins()},
-		{"losses", player.Losses()},
+	update := bson.D{{Key: "$set", Value: bson.D{
+		{Key: "wins", Value: player.Wins()},
+		{Key: "losses", Value: player.Losses()},
 	}}}
 	_, err := r.collection.UpdateByID(context.TODO(), player.Id(), update)
 	if err != nil {
@@ -69,4 +69,13 @@ func (r *PlayerRepository) FindById(id int) (*domain.Player, error) {
 		playerRecord.Wins,
 		playerRecord.Losses,
 	), nil
+}
+
+func (r *PlayerRepository) FindPlayer(id int) (PlayerRecord, error) {
+	var playerRecord PlayerRecord
+	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&playerRecord)
+	if err != nil {
+		return PlayerRecord{}, err
+	}
+	return playerRecord, nil
 }

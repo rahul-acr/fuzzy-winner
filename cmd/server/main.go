@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
 	"tv/quick-bat/internal/usecase"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -19,12 +20,12 @@ func main() {
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 
-	usecase.LoadChallenge = challengeRepo.Find
-
 	domain.AddChallengeCreateListener(challengeRepo.Add)
 	domain.AddChallengeChangeListener(challengeRepo.Update)
 	domain.AddPlayerChangeListener(playerRepo.Update)
 
+	playerManager := usecase.PlayerManager{ PlayerRepository: *playerRepo}
+	challengerManager := usecase.ChallengeManager{ChallengeRepository: *challengeRepo, PlayerManager: playerManager}
 	router := gin.Default()
 
 	router.GET("/players/:id", func(ctx *gin.Context) {
@@ -55,7 +56,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		usecase.CreateChallenge(challenge)
+		challengerManager.CreateChallenge(challenge)
 	})
 
 	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {
@@ -66,7 +67,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		err = usecase.AcceptChallenge(challengeId, challengeAccept)
+		err = challengerManager.AcceptChallenge(challengeId, challengeAccept)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 		}

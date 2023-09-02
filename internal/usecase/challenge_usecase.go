@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"time"
+	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
 )
 
@@ -15,19 +16,47 @@ type ChallengeAccept struct {
 	MatchTime  time.Time `json:"matchTime"`
 }
 
-var LoadChallenge = func(challengeId interface{}) (*domain.Challenge, error) { panic("Hook is not linked") }
-
-func CreateChallenge(c Challenge) {
-	challenger := findPlayerById(c.ChallengerId)
-	opponent := findPlayerById(c.OpponentId)
-	challenger.Challenge(opponent)
+type ChallengeManager struct {
+	ChallengeRepository db.ChallengeRepository
+	PlayerManager       PlayerManager
 }
 
-func AcceptChallenge(challengeId interface{}, accept ChallengeAccept) error {
-	challenge, err := LoadChallenge(challengeId)
+func (c ChallengeManager) CreateChallenge(challenge Challenge) error {
+	challenger, err :=  c.PlayerManager.FindPlayer(challenge.ChallengerId)
 	if err != nil {
 		return err
 	}
-	challenge.Opponent().Accept(challenge, accept.MatchTime)
+	opponent,err :=  c.PlayerManager.FindPlayer(challenge.OpponentId)
+	if err != nil {
+		return err
+	}
+	challenger.Challenge(opponent)
+	return nil
+}
+
+func (c ChallengeManager) AcceptChallenge(challengeId interface{}, accept ChallengeAccept) error {
+	record, err := c.ChallengeRepository.FindChallenge(challengeId)
+	if err != nil {
+		return err
+	}
+	opponent, err := c.PlayerManager.FindPlayer(record.OpponentId)
+	if err != nil {
+		return err
+	}
+	challenger, err := c.PlayerManager.FindPlayer(record.ChallengerId)
+	if err != nil {
+		return err
+	}
+
+	var winner domain.Player
+	if record.WinnerId != 0 {
+		winner, err = c.PlayerManager.FindPlayer(record.WinnerId)
+		if err != nil {
+			return err
+		}
+	}
+
+	challenge := domain.LoadChallenge(record.Id, challenger, opponent, winner, record.IsAccepted, record.Time)
+	challenger.Accept(challenge, accept.MatchTime)
 	return nil
 }

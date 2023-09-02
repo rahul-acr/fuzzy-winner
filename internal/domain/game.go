@@ -25,6 +25,10 @@ func NewPlayer(id PlayerId, wins, looses int) *Player {
 	return &Player{id, wins, looses}
 }
 
+func NewPlayer2(id PlayerId, wins, looses int) Player {
+	return Player{id, wins, looses}
+}
+
 func (player *Player) Wins() int {
 	return player.wins
 }
@@ -37,10 +41,15 @@ func (player *Player) Id() PlayerId {
 	return player.id
 }
 
-func (player *Player) Challenge(opponent *Player) *Challenge {
-	return NewChallenge(player, opponent)
+func (player *Player) Challenge(opponent Player) *Challenge {
+	return newChallenge(*player, opponent)
 }
 
 func (player *Player) Accept(challenge *Challenge, agreedTime time.Time) {
-	challenge.acceptBy(player, agreedTime)
+	challenge.acceptBy(*player, agreedTime)
+}
+
+func (player *Player) Win(challenge *Challenge){
+	player.WinAgainst(&challenge.opponent)
+	challenge.winBy(*player)
 }
