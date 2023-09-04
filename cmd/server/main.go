@@ -20,7 +20,6 @@ func main() {
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 
-	domain.AddChallengeCreateListener(challengeRepo.Add)
 	domain.AddChallengeChangeListener(challengeRepo.Update)
 	domain.AddPlayerUpdateListener(playerRepo.Update)
 	domain.AddPlayerUpdateListener(domain.MainLeaderBoard.UpdatePlayer)
@@ -50,7 +49,11 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		usecase.AddMatch(&match)
+		err = usecase.AddMatch(&match)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
 		ctx.Status(http.StatusCreated)
 	})
 
@@ -61,7 +64,12 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		challengerManager.CreateChallenge(challenge)
+		createdChallenge, err := challengerManager.CreateChallenge(challenge)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
+		ctx.JSON(http.StatusCreated, &createdChallenge)
 	})
 
 	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {

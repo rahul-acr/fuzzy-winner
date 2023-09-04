@@ -40,10 +40,9 @@ func (c *Challenge) Winner() Player {
 }
 
 
-func newChallenge(challenger Player, opponent Player) *Challenge {
+func newChallenge(challenger Player, opponent Player) Challenge {
 	challenge := Challenge{challenger: challenger, opponent: opponent}
-	publishChallengeCreate(challenge)
-	return &challenge
+	return challenge
 }
 
 func (c *Challenge) winBy(winner Player) {

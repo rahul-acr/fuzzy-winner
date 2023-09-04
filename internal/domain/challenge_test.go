@@ -11,9 +11,6 @@ func TestRahulShouldBeAbleToChallengeParikshit(t *testing.T) {
 
 	challenge := rahul.Challenge(parikshit)
 
-	if challenge == nil {
-		t.Fatalf("Challenge should be added")
-	}
 	if challenge.challenger != rahul {
 		t.Fatalf("Rahul should be the challenger")
 	}
@@ -28,7 +25,7 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 
 	matchTime := time.Now().Add(time.Hour * 2)
 	challenge := rahul.Challenge(parikshit)
-	parikshit.Accept(challenge, matchTime)
+	parikshit.Accept(&challenge, matchTime)
 
 	if !challenge.isAccepted {
 		t.Fatalf("Challenge should be accepted")
@@ -46,7 +43,7 @@ func TestLeaderBoardShouldUpdateWhenParikshitWon(t *testing.T) {
 
 	matchTime := time.Now().Add(time.Hour * 2)
 	challenge := rahul.Challenge(parikshit)
-	parikshit.Accept(challenge, matchTime)
+	parikshit.Accept(&challenge, matchTime)
 
 	challenge.winBy(parikshit)
 

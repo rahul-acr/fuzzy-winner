@@ -36,7 +36,7 @@ func (player *Player) Id() PlayerId {
 	return player.id
 }
 
-func (player *Player) Challenge(opponent Player) *Challenge {
+func (player *Player) Challenge(opponent Player) Challenge {
 	return newChallenge(*player, opponent)
 }
 

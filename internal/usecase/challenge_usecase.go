@@ -21,17 +21,16 @@ type ChallengeManager struct {
 	PlayerManager       PlayerManager
 }
 
-func (c ChallengeManager) CreateChallenge(challenge Challenge) error {
-	challenger, err :=  c.PlayerManager.FindPlayer(challenge.ChallengerId)
+func (c ChallengeManager) CreateChallenge(challenge Challenge) (domain.Challenge, error) {
+	challenger, err := c.PlayerManager.FindPlayer(challenge.ChallengerId)
 	if err != nil {
-		return err
+		return domain.Challenge{}, err
 	}
-	opponent,err :=  c.PlayerManager.FindPlayer(challenge.OpponentId)
+	opponent, err := c.PlayerManager.FindPlayer(challenge.OpponentId)
 	if err != nil {
-		return err
+		return domain.Challenge{}, err
 	}
-	challenger.Challenge(opponent)
-	return nil
+	return c.ChallengeRepository.Add(challenger.Challenge(opponent))
 }
 
 func (c ChallengeManager) AcceptChallenge(challengeId interface{}, accept ChallengeAccept) error {

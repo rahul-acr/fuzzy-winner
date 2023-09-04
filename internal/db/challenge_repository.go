@@ -12,14 +12,13 @@ import (
 
 type ChallengeRepository struct {
 	collection       *mongo.Collection
-	playerRepository *PlayerRepository
 }
 
 func NewChallengeRepository(
 	collection *mongo.Collection,
 	playerRepository *PlayerRepository,
 ) *ChallengeRepository {
-	return &ChallengeRepository{collection: collection, playerRepository: playerRepository}
+	return &ChallengeRepository{collection: collection}
 }
 
 func (c *ChallengeRepository) Update(challenge domain.Challenge) {
@@ -41,7 +40,7 @@ func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	}
 }
 
-func (c *ChallengeRepository) Add(challenge domain.Challenge) {
+func (c *ChallengeRepository) Add(challenge domain.Challenge) (domain.Challenge, error) {
 	opponent := challenge.Opponent()
 	challenger := challenge.Challenger()
 
@@ -51,9 +50,10 @@ func (c *ChallengeRepository) Add(challenge domain.Challenge) {
 		OpponentId:   int(opponent.Id()),
 	})
 	if err != nil {
-		panic(err)
+		return domain.Challenge{}, nil
 	}
 	challenge.SetId(result.InsertedID)
+	return challenge, nil
 }
 
 
