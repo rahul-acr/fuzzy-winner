@@ -39,7 +39,6 @@ func (c *Challenge) Winner() Player {
 	return c.winner
 }
 
-
 func newChallenge(challenger Player, opponent Player) Challenge {
 	challenge := Challenge{challenger: challenger, opponent: opponent}
 	return challenge

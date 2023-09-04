@@ -34,7 +34,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		playerDetails, err := usecase.GetPlayerDetails(playerId)
+		playerDetails, err := usecase.GetPlayerDetails(ctx, playerId)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return
@@ -49,7 +49,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		err = usecase.AddMatch(&match)
+		err = usecase.AddMatch(ctx, &match)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return
@@ -64,7 +64,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		createdChallenge, err := challengerManager.CreateChallenge(challenge)
+		createdChallenge, err := challengerManager.CreateChallenge(ctx, challenge)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return
@@ -80,7 +80,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		err = challengerManager.AcceptChallenge(challengeId, challengeAccept)
+		err = challengerManager.AcceptChallenge(ctx, challengeId, challengeAccept)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 		}

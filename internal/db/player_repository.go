@@ -55,9 +55,9 @@ func (r *PlayerRepository) FetchAll() []domain.Player {
 	return players
 }
 
-func (r *PlayerRepository) FindPlayer(id int) (PlayerRecord, error) {
+func (r *PlayerRepository) FindPlayer(ctx context.Context, id int) (PlayerRecord, error) {
 	var playerRecord PlayerRecord
-	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&playerRecord)
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&playerRecord)
 	if err != nil {
 		return PlayerRecord{}, err
 	}

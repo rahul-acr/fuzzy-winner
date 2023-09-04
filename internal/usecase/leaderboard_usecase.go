@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"tv/quick-bat/internal/domain"
 )
 
@@ -17,7 +18,8 @@ type PlayerDetails struct {
 	Rank   int
 }
 
-func AddMatch(match *Match) error {
+func AddMatch(ctx context.Context, match *Match) error {
+	
 	thisPlayer, err := findPlayerById(match.ThisPlayerId)
 	if err != nil {
 		return err
@@ -37,9 +39,9 @@ func AddMatch(match *Match) error {
 	return nil
 }
 
-func GetPlayerDetails(playerId int) (PlayerDetails, error) {
+func GetPlayerDetails(ctx context.Context, playerId int) (PlayerDetails, error) {
 	player, err := findPlayerById(playerId)
-	if err!=nil {
+	if err != nil {
 		return PlayerDetails{}, err
 	}
 	leaderBoard := domain.GetLeaderBoard()

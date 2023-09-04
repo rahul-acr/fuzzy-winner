@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"testing"
 	"tv/quick-bat/internal/domain"
 )
@@ -13,7 +14,7 @@ func TestParikshitShouldHave1WinAndRahulHave1LossWhenParikshitAddsAWinMatchAgain
 		domain.NewPlayer(rahulId, 0, 0),
 	})
 	match := Match{1, 2, true}
-	err := AddMatch(&match)
+	err := AddMatch(context.TODO(), &match)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +39,7 @@ func TestRahulShouldHave1WinAndParikshitHave1LossWhenParikshitAddsALoseMatchAgai
 		domain.NewPlayer(rahulId, 0, 0),
 	})
 	match := Match{1, 2, false}
-	err := AddMatch(&match)
+	err := AddMatch(context.TODO(), &match)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +67,7 @@ func TestShouldGivePlayerDetails(t *testing.T) {
 	parikshit.WinAgainst(&rahul)
 	rahul.WinAgainst(&parikshit)
 
-	rahulsDetails, _ := GetPlayerDetails(2)
+	rahulsDetails, _ := GetPlayerDetails(context.TODO(), 2)
 
 	if rahulsDetails.Wins != 2 {
 		t.Fatalf("Rahul should have 2 wins")
