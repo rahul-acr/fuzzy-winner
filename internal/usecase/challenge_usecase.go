@@ -57,6 +57,5 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 	}
 
 	challenge := domain.LoadChallenge(record.Id, challenger, opponent, winner, record.IsAccepted, record.Time)
-	challenger.Accept(challenge, accept.MatchTime)
-	return nil
+	return challenger.Accept(challenge, accept.MatchTime)
 }

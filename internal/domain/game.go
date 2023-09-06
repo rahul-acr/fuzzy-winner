@@ -40,8 +40,8 @@ func (player *Player) Challenge(opponent Player) Challenge {
 	return newChallenge(*player, opponent)
 }
 
-func (player *Player) Accept(challenge *Challenge, agreedTime time.Time) {
-	challenge.acceptBy(*player, agreedTime)
+func (player *Player) Accept(challenge *Challenge, agreedTime time.Time) error {
+	return challenge.acceptBy(*player, agreedTime)
 }
 
 func (player *Player) Win(challenge *Challenge){

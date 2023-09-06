@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type Challenge struct {
 	id         any
@@ -49,13 +52,14 @@ func (c *Challenge) winBy(winner Player) {
 	publishChallengeUpdate(*c)
 }
 
-func (c *Challenge) acceptBy(acceptedBy Player, agreedTime time.Time) {
+func (c *Challenge) acceptBy(acceptedBy Player, agreedTime time.Time) error {
 	if acceptedBy.id != c.opponent.id {
-		panic("challenge can not be accepted by someone other than opponent")
+		return errors.New("challenge can not be accepted by someone other than opponent")
 	}
 	c.isAccepted = true
 	c.time = &agreedTime
 	publishChallengeUpdate(*c)
+	return nil
 }
 
 func LoadChallenge(id any, challenger Player, opponent Player, winner Player, isAccepted bool, time *time.Time) *Challenge {
