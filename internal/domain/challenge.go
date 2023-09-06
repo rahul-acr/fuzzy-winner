@@ -11,7 +11,7 @@ type Challenge struct {
 	opponent   Player
 	winner     Player
 	isAccepted bool
-	time       *time.Time
+	matchTime  *time.Time
 }
 
 func (c *Challenge) SetId(value any) {
@@ -23,7 +23,7 @@ func (c *Challenge) GetId() any {
 }
 
 func (c *Challenge) Time() *time.Time {
-	return c.time
+	return c.matchTime
 }
 
 func (c *Challenge) IsAccepted() bool {
@@ -57,18 +57,18 @@ func (c *Challenge) acceptBy(acceptedBy Player, agreedTime time.Time) error {
 		return errors.New("challenge can not be accepted by someone other than opponent")
 	}
 	c.isAccepted = true
-	c.time = &agreedTime
+	c.matchTime = &agreedTime
 	publishChallengeUpdate(*c)
 	return nil
 }
 
-func LoadChallenge(id any, challenger Player, opponent Player, winner Player, isAccepted bool, time *time.Time) *Challenge {
+func LoadChallenge(id any, challenger Player, opponent Player, winner Player, isAccepted bool, matchTime *time.Time) *Challenge {
 	return &Challenge{
 		id:         id,
 		challenger: challenger,
 		opponent:   opponent,
 		winner:     winner,
 		isAccepted: isAccepted,
-		time:       time,
+		matchTime:  matchTime,
 	}
 }

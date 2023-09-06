@@ -30,7 +30,7 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 	if !challenge.isAccepted {
 		t.Fatalf("Challenge should be accepted")
 	}
-	if *challenge.time != matchTime {
+	if *challenge.matchTime != matchTime {
 		t.Fatalf("date time does not match")
 	}
 
