@@ -59,7 +59,7 @@ func main() {
 	})
 
 	router.POST("/challenges", func(ctx *gin.Context) {
-		var challenge usecase.Challenge
+		var challenge usecase.ChallengeCreatePayload
 		err := ctx.BindJSON(&challenge)
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
@@ -89,7 +89,7 @@ func main() {
 
 	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {
 		challengeId := ctx.Param("id")
-		var challengeAccept usecase.ChallengeAccept
+		var challengeAccept usecase.ChallengeAcceptPayload
 		err := ctx.BindJSON(&challengeAccept)
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)

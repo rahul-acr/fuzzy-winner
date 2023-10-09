@@ -40,11 +40,11 @@ func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	}
 }
 
-func (c *ChallengeRepository) Add(challenge domain.Challenge) (domain.Challenge, error) {
+func (c *ChallengeRepository) Add(ctx context.Context,challenge domain.Challenge) (domain.Challenge, error) {
 	opponent := challenge.Opponent()
 	challenger := challenge.Challenger()
 
-	result, err := c.collection.InsertOne(context.TODO(), ChallengeRecord{
+	result, err := c.collection.InsertOne(ctx, ChallengeRecord{
 		Id:           primitive.NewObjectID(),
 		ChallengerId: int(challenger.Id()),
 		OpponentId:   int(opponent.Id()),
@@ -57,14 +57,14 @@ func (c *ChallengeRepository) Add(challenge domain.Challenge) (domain.Challenge,
 }
 
 
-func (c *ChallengeRepository) FindChallenge(challengeId any) (ChallengeRecord, error) {
+func (c *ChallengeRepository) FindChallenge(ctx context.Context, challengeId any) (ChallengeRecord, error) {
 	hex := challengeId.(string)
 	id, err := primitive.ObjectIDFromHex(hex)
 	if err != nil {
 		return ChallengeRecord{}, err
 	}
 	var record ChallengeRecord
-	err = c.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&record)
+	err = c.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&record)
 	if err != nil {
 		return ChallengeRecord{}, err
 	}
@@ -72,11 +72,6 @@ func (c *ChallengeRepository) FindChallenge(challengeId any) (ChallengeRecord, e
 }
 
 func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playerId any) ([]ChallengeRecord, error) {
-	// hex := playerId.(string)
-	// id, err := primitive.ObjectIDFromHex(hex)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	cursor, err := c.collection.Find(ctx, bson.M{"opponentId": playerId.(int)})
 	if err != nil {
 		return nil, err

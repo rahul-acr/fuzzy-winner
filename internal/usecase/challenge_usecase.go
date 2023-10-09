@@ -7,12 +7,12 @@ import (
 	"tv/quick-bat/internal/domain"
 )
 
-type Challenge struct {
+type ChallengeCreatePayload struct {
 	ChallengerId int `json:"challengerId"`
 	OpponentId   int `json:"opponentId"`
 }
 
-type ChallengeAccept struct {
+type ChallengeAcceptPayload struct {
 	OpponentId int       `json:"opponentId"`
 	MatchTime  time.Time `json:"matchTime"`
 }
@@ -22,7 +22,7 @@ type ChallengeManager struct {
 	PlayerManager       PlayerManager
 }
 
-func (c ChallengeManager) CreateChallenge(ctx context.Context, challenge Challenge) (domain.Challenge, error) {
+func (c ChallengeManager) CreateChallenge(ctx context.Context, challenge ChallengeCreatePayload) (domain.Challenge, error) {
 	challenger, err := c.PlayerManager.FindPlayer(ctx, challenge.ChallengerId)
 	if err != nil {
 		return domain.Challenge{}, err
@@ -31,7 +31,7 @@ func (c ChallengeManager) CreateChallenge(ctx context.Context, challenge Challen
 	if err != nil {
 		return domain.Challenge{}, err
 	}
-	return c.ChallengeRepository.Add(challenger.Challenge(opponent))
+	return c.ChallengeRepository.Add(ctx, challenger.Challenge(opponent))
 }
 
 func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId int) ([]domain.Challenge, error) {
@@ -50,8 +50,8 @@ func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId i
 	return challenges, nil
 }
 
-func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, accept ChallengeAccept) error {
-	record, err := c.ChallengeRepository.FindChallenge(challengeId)
+func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, accept ChallengeAcceptPayload) error {
+	record, err := c.ChallengeRepository.FindChallenge(ctx, challengeId)
 	if err != nil {
 		return err
 	}
