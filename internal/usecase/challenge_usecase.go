@@ -59,8 +59,11 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 	if err != nil {
 		return err
 	}
-	challenger := challenge.Challenger()
-	return challenger.Accept(challenge, accept.MatchTime)
+	opponent, err := c.PlayerManager.FindPlayer(ctx, accept.OpponentId)
+	if err != nil {
+		return nil
+	}
+	return opponent.Accept(challenge, accept.MatchTime)
 }
 
 func (c ChallengeManager) loadChallenge(ctx context.Context, record db.ChallengeRecord) (*domain.Challenge, error) {
