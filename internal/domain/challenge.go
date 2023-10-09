@@ -6,20 +6,12 @@ import (
 )
 
 type Challenge struct {
-	id         any
+	Id         any
 	challenger Player
 	opponent   Player
 	winner     Player
 	isAccepted bool
 	matchTime  *time.Time
-}
-
-func (c *Challenge) SetId(value any) {
-	c.id = value
-}
-
-func (c *Challenge) GetId() any {
-	return c.id
 }
 
 func (c *Challenge) Time() *time.Time {
@@ -62,9 +54,15 @@ func (c *Challenge) acceptBy(acceptedBy Player, agreedTime time.Time) error {
 	return nil
 }
 
-func LoadChallenge(id any, challenger Player, opponent Player, winner Player, isAccepted bool, matchTime *time.Time) *Challenge {
+func LoadChallenge(id any,
+	challenger Player,
+	opponent Player,
+	winner Player,
+	isAccepted bool,
+	matchTime *time.Time,
+) *Challenge {
 	return &Challenge{
-		id:         id,
+		Id:         id,
 		challenger: challenger,
 		opponent:   opponent,
 		winner:     winner,

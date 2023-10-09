@@ -32,7 +32,7 @@ func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	}
 	_, err := c.collection.UpdateByID(
 		context.TODO(),
-		challenge.GetId(),
+		challenge.Id,
 		bson.D{{Key: "$set", Value: update}},
 	)
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *ChallengeRepository) Add(challenge domain.Challenge) (domain.Challenge,
 	if err != nil {
 		return domain.Challenge{}, nil
 	}
-	challenge.SetId(result.InsertedID)
+	challenge.Id = result.InsertedID
 	return challenge, nil
 }
 
