@@ -44,7 +44,7 @@ func (player *Player) Accept(challenge *Challenge, agreedTime time.Time) error {
 	return challenge.acceptBy(*player, agreedTime)
 }
 
-func (player *Player) Win(challenge *Challenge){
+func (player *Player) Win(challenge *Challenge) {
 	player.WinAgainst(&challenge.opponent)
 	challenge.winBy(*player)
 }

@@ -20,6 +20,7 @@ func main() {
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 
+	// TODO move this to appropriate packages
 	domain.AddChallengeChangeListener(challengeRepo.Update)
 	domain.AddPlayerUpdateListener(playerRepo.Update)
 	domain.AddPlayerUpdateListener(domain.MainLeaderBoard.UpdatePlayer)

@@ -2,7 +2,7 @@ package events
 
 type Event struct {
 	Name    string
-	Payload interface{}
+	Payload any
 }
 
 type listeners []Listener
@@ -11,7 +11,7 @@ type Listener func(event Event)
 
 var listenersMap = make(map[string]listeners)
 
-func Publish(eventName string, payload interface{}) {
+func Publish(eventName string, payload any) {
 	for _, listener := range listenersMap[eventName] {
 		listener(Event{Name: eventName, Payload: payload})
 	}
