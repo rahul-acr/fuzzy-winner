@@ -25,7 +25,7 @@ func main() {
 	domain.AddPlayerUpdateListener(playerRepo.Update)
 	domain.AddPlayerUpdateListener(domain.MainLeaderBoard.UpdatePlayer)
 
-	playerManager := usecase.PlayerManager{ PlayerRepository: *playerRepo}
+	playerManager := usecase.PlayerManager{PlayerRepository: *playerRepo}
 	challengerManager := usecase.ChallengeManager{ChallengeRepository: *challengeRepo, PlayerManager: playerManager}
 	router := gin.Default()
 
@@ -71,6 +71,20 @@ func main() {
 			return
 		}
 		ctx.JSON(http.StatusCreated, &createdChallenge)
+	})
+
+	router.GET("/players/:id/challenges", func(ctx *gin.Context) {
+		playerId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return
+		}
+		challenges, err := challengerManager.FindChallengsForPlayer(ctx, playerId)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
+		ctx.JSON(http.StatusCreated, challenges)
 	})
 
 	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {

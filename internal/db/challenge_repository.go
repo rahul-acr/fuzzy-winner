@@ -71,6 +71,25 @@ func (c *ChallengeRepository) FindChallenge(challengeId any) (ChallengeRecord, e
 	return record, nil
 }
 
+func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playerId any) ([]ChallengeRecord, error) {
+	// hex := playerId.(string)
+	// id, err := primitive.ObjectIDFromHex(hex)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	cursor, err := c.collection.Find(ctx, bson.M{"opponentId": playerId.(int)})
+	if err != nil {
+		return nil, err
+	}
+
+	var challengeRecords []ChallengeRecord
+	if err = cursor.All(ctx, &challengeRecords); err != nil {
+		return nil, err
+	}
+	return challengeRecords, nil
+}
+
+
 type ChallengeRecord struct {
 	Id           primitive.ObjectID `bson:"_id"`
 	OpponentId   int                `bson:"opponentId"`
