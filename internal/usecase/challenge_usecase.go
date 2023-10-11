@@ -22,6 +22,36 @@ type ChallengeManager struct {
 	PlayerManager       PlayerManager
 }
 
+type ChallengeInfo struct {
+	Id         any        `json:"id"`
+	Challenger int        `json:"challengerId"`
+	Opponent   int        `json:"opponentId"`
+	Winner     int        `json:"winnerId,omitempty"`
+	IsAccepted bool       `json:"isAccepted"`
+	MatchTime  *time.Time `json:"matchTime"`
+}
+
+func NewChallengeInfo(c domain.Challenge) ChallengeInfo {
+	challenger := c.Challenger()
+	opponent := c.Opponent()
+
+	cInfo := ChallengeInfo{
+		Id:         c.Id,
+		Challenger: int(challenger.Id()),
+		Opponent:   int(opponent.Id()),
+	}
+
+	winner := c.Winner()
+	if (winner != domain.Player{}) {
+		cInfo.Winner = int(winner.Id())
+	}
+
+	cInfo.MatchTime = c.Time()
+	cInfo.IsAccepted = c.IsAccepted()
+
+	return cInfo
+}
+
 func (c ChallengeManager) CreateChallenge(ctx context.Context, challenge ChallengeCreatePayload) (domain.Challenge, error) {
 	challenger, err := c.PlayerManager.FindPlayer(ctx, challenge.ChallengerId)
 	if err != nil {
@@ -34,18 +64,21 @@ func (c ChallengeManager) CreateChallenge(ctx context.Context, challenge Challen
 	return c.ChallengeRepository.Add(ctx, challenger.Challenge(opponent))
 }
 
-func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId int) ([]domain.Challenge, error) {
+func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId int) ([]ChallengeInfo, error) {
 	challengeRecords, err := c.ChallengeRepository.FindChallengesForPlayer(ctx, playerId)
 	if err != nil {
 		return nil, err
 	}
-	challenges := make([]domain.Challenge, len(challengeRecords))
+	challenges := make([]ChallengeInfo, len(challengeRecords))
 	for i, r := range challengeRecords {
-		challenge , err := c.loadChallenge(ctx, r)
-		if err != nil {
-			return nil, err
+		challenges[i] = ChallengeInfo{
+			Id:         r.Id,
+			Challenger: r.ChallengerId,
+			Opponent:   r.OpponentId,
+			Winner:     r.WinnerId,
+			MatchTime:  r.Time,
+			IsAccepted: r.IsAccepted,
 		}
-		challenges[i] = *challenge
 	}
 	return challenges, nil
 }
@@ -61,7 +94,7 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 	}
 	opponent, err := c.PlayerManager.FindPlayer(ctx, accept.OpponentId)
 	if err != nil {
-		return nil
+		return err
 	}
 	return opponent.Accept(challenge, accept.MatchTime)
 }
@@ -69,7 +102,7 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 func (c ChallengeManager) loadChallenge(ctx context.Context, record db.ChallengeRecord) (*domain.Challenge, error) {
 	opponent, err := c.PlayerManager.FindPlayer(ctx, record.OpponentId)
 	if err != nil {
-		return nil,  err
+		return nil, err
 	}
 	challenger, err := c.PlayerManager.FindPlayer(ctx, record.ChallengerId)
 	if err != nil {
@@ -80,7 +113,7 @@ func (c ChallengeManager) loadChallenge(ctx context.Context, record db.Challenge
 	if record.WinnerId != 0 {
 		winner, err = c.PlayerManager.FindPlayer(ctx, record.WinnerId)
 		if err != nil {
-			return  nil, err
+			return nil, err
 		}
 	}
 

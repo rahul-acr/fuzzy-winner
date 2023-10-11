@@ -70,7 +70,7 @@ func main() {
 			ctx.Status(http.StatusInternalServerError)
 			return
 		}
-		ctx.JSON(http.StatusCreated, &createdChallenge)
+		ctx.JSON(http.StatusCreated, usecase.NewChallengeInfo(createdChallenge))
 	})
 
 	router.GET("/players/:id/challenges", func(ctx *gin.Context) {
