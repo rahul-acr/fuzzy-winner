@@ -65,30 +65,19 @@ func (c ChallengeManager) CreateChallenge(ctx context.Context, challenge Challen
 }
 
 func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId int) ([]ChallengeInfo, error) {
-	challengeRecords, err := c.ChallengeRepository.FindChallengesForPlayer(ctx, playerId)
+	challenges, err := c.ChallengeRepository.FindChallengesForPlayer(ctx, playerId)
 	if err != nil {
 		return nil, err
 	}
-	challenges := make([]ChallengeInfo, len(challengeRecords))
-	for i, r := range challengeRecords {
-		challenges[i] = ChallengeInfo{
-			Id:         r.Id,
-			Challenger: r.ChallengerId,
-			Opponent:   r.OpponentId,
-			Winner:     r.WinnerId,
-			MatchTime:  r.Time,
-			IsAccepted: r.IsAccepted,
-		}
+	challengeInfos := make([]ChallengeInfo, len(challenges))
+	for i, r := range challenges {
+		challengeInfos[i] = NewChallengeInfo(r)
 	}
-	return challenges, nil
+	return challengeInfos, nil
 }
 
 func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, accept ChallengeAcceptPayload) error {
-	record, err := c.ChallengeRepository.FindChallenge(ctx, challengeId)
-	if err != nil {
-		return err
-	}
-	challenge, err := c.loadChallenge(ctx, record)
+	challenge, err := c.ChallengeRepository.FindChallenge(ctx, challengeId)
 	if err != nil {
 		return err
 	}
@@ -96,27 +85,5 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 	if err != nil {
 		return err
 	}
-	return opponent.Accept(challenge, accept.MatchTime)
-}
-
-func (c ChallengeManager) loadChallenge(ctx context.Context, record db.ChallengeRecord) (*domain.Challenge, error) {
-	opponent, err := c.PlayerManager.FindPlayer(ctx, record.OpponentId)
-	if err != nil {
-		return nil, err
-	}
-	challenger, err := c.PlayerManager.FindPlayer(ctx, record.ChallengerId)
-	if err != nil {
-		return nil, err
-	}
-
-	var winner domain.Player
-	if record.WinnerId != 0 {
-		winner, err = c.PlayerManager.FindPlayer(ctx, record.WinnerId)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	challenge := domain.LoadChallenge(record.Id, challenger, opponent, winner, record.IsAccepted, record.Time)
-	return challenge, nil
+	return opponent.Accept(&challenge, accept.MatchTime)
 }

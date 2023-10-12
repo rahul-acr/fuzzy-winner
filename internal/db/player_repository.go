@@ -55,11 +55,11 @@ func (r *PlayerRepository) FetchAll() []domain.Player {
 	return players
 }
 
-func (r *PlayerRepository) FindPlayer(ctx context.Context, id int) (PlayerRecord, error) {
-	var playerRecord PlayerRecord
-	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&playerRecord)
+func (r *PlayerRepository) FindPlayer(ctx context.Context, id int) (domain.Player, error) {
+	var record PlayerRecord
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&record)
 	if err != nil {
-		return PlayerRecord{}, err
+		return domain.Player{}, err
 	}
-	return playerRecord, nil
+	return domain.NewPlayer(domain.PlayerId(record.Id), record.Wins, record.Losses), nil
 }

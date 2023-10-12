@@ -12,13 +12,17 @@ import (
 
 type ChallengeRepository struct {
 	collection       *mongo.Collection
+	playerRepository *PlayerRepository
 }
 
 func NewChallengeRepository(
 	collection *mongo.Collection,
 	playerRepository *PlayerRepository,
 ) *ChallengeRepository {
-	return &ChallengeRepository{collection: collection}
+	return &ChallengeRepository{
+		collection:       collection,
+		playerRepository: playerRepository,
+	}
 }
 
 func (c *ChallengeRepository) Update(challenge domain.Challenge) {
@@ -40,7 +44,7 @@ func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	}
 }
 
-func (c *ChallengeRepository) Add(ctx context.Context,challenge domain.Challenge) (domain.Challenge, error) {
+func (c *ChallengeRepository) Add(ctx context.Context, challenge domain.Challenge) (domain.Challenge, error) {
 	opponent := challenge.Opponent()
 	challenger := challenge.Challenger()
 
@@ -56,34 +60,63 @@ func (c *ChallengeRepository) Add(ctx context.Context,challenge domain.Challenge
 	return challenge, nil
 }
 
-
-func (c *ChallengeRepository) FindChallenge(ctx context.Context, challengeId any) (ChallengeRecord, error) {
+func (c *ChallengeRepository) FindChallenge(ctx context.Context, challengeId any) (domain.Challenge, error) {
 	hex := challengeId.(string)
 	id, err := primitive.ObjectIDFromHex(hex)
 	if err != nil {
-		return ChallengeRecord{}, err
+		return domain.Challenge{}, err
 	}
 	var record ChallengeRecord
 	err = c.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&record)
 	if err != nil {
-		return ChallengeRecord{}, err
+		return domain.Challenge{}, err
 	}
-	return record, nil
+	challenge, err := c.challengeFromRecord(ctx, record)
+	return *challenge, err
 }
 
-func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playerId any) ([]ChallengeRecord, error) {
+func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playerId any) ([]domain.Challenge, error) {
 	cursor, err := c.collection.Find(ctx, bson.M{"opponentId": playerId.(int)})
 	if err != nil {
 		return nil, err
 	}
 
-	var challengeRecords []ChallengeRecord
-	if err = cursor.All(ctx, &challengeRecords); err != nil {
+	var records []ChallengeRecord
+	if err = cursor.All(ctx, &records); err != nil {
 		return nil, err
 	}
-	return challengeRecords, nil
+
+	var challenges []domain.Challenge
+	for _, r := range records {
+		challenge, err := c.challengeFromRecord(ctx, r)
+		if err != nil {
+			return nil, err
+		}
+		challenges = append(challenges, *challenge)
+	}
+
+	return challenges, nil
 }
 
+func (c *ChallengeRepository) challengeFromRecord(ctx context.Context, record ChallengeRecord) (*domain.Challenge, error) {
+	challenger, err := c.playerRepository.FindPlayer(ctx, record.ChallengerId)
+	if err != nil {
+		return nil, err
+	}
+	opponent, err := c.playerRepository.FindPlayer(ctx, record.OpponentId)
+	if err != nil {
+		return nil, err
+	}
+	var winner domain.Player
+	if record.WinnerId != 0 {
+		winner, err = c.playerRepository.FindPlayer(ctx, record.WinnerId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return domain.LoadChallenge(record.Id, challenger, opponent, winner, record.IsAccepted, record.Time), nil
+}
 
 type ChallengeRecord struct {
 	Id           primitive.ObjectID `bson:"_id"`

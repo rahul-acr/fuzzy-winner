@@ -11,9 +11,5 @@ type PlayerManager struct {
 }
 
 func (p *PlayerManager) FindPlayer(ctx context.Context, playerId int) (domain.Player, error) {
-	playerRecord, err := p.PlayerRepository.FindPlayer(ctx, playerId)
-	if err != nil {
-		return domain.Player{}, err
-	}
-	return domain.NewPlayer(domain.PlayerId(playerId), playerRecord.Wins, playerRecord.Losses), nil
+	return p.PlayerRepository.FindPlayer(ctx, playerId)
 }
