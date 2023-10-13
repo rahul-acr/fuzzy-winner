@@ -32,7 +32,7 @@ func (c *ChallengeRepository) Update(challenge domain.Challenge) {
 	}
 	winner := challenge.Winner()
 	if (winner != domain.Player{}) {
-		update = append(update, bson.E{Key: "winner", Value: winner.Id()})
+		update = append(update, bson.E{Key: "winnerId", Value: winner.Id()})
 	}
 	_, err := c.collection.UpdateByID(
 		context.TODO(),
@@ -71,8 +71,7 @@ func (c *ChallengeRepository) FindChallenge(ctx context.Context, challengeId any
 	if err != nil {
 		return domain.Challenge{}, err
 	}
-	challenge, err := c.challengeFromRecord(ctx, record)
-	return *challenge, err
+	return c.challengeFromRecord(ctx, record)
 }
 
 func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playerId any) ([]domain.Challenge, error) {
@@ -92,29 +91,28 @@ func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playe
 		if err != nil {
 			return nil, err
 		}
-		challenges = append(challenges, *challenge)
+		challenges = append(challenges, challenge)
 	}
 
 	return challenges, nil
 }
 
-func (c *ChallengeRepository) challengeFromRecord(ctx context.Context, record ChallengeRecord) (*domain.Challenge, error) {
+func (c *ChallengeRepository) challengeFromRecord(ctx context.Context, record ChallengeRecord) (domain.Challenge, error) {
 	challenger, err := c.playerRepository.FindPlayer(ctx, record.ChallengerId)
 	if err != nil {
-		return nil, err
+		return domain.Challenge{}, err
 	}
 	opponent, err := c.playerRepository.FindPlayer(ctx, record.OpponentId)
 	if err != nil {
-		return nil, err
+		return domain.Challenge{}, err
 	}
 	var winner domain.Player
 	if record.WinnerId != 0 {
 		winner, err = c.playerRepository.FindPlayer(ctx, record.WinnerId)
 		if err != nil {
-			return nil, err
+			return domain.Challenge{}, err
 		}
 	}
-
 	return domain.LoadChallenge(record.Id, challenger, opponent, winner, record.IsAccepted, record.Time), nil
 }
 

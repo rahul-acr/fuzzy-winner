@@ -39,9 +39,13 @@ func newChallenge(challenger Player, opponent Player) Challenge {
 	return challenge
 }
 
-func (c *Challenge) winBy(winner Player) {
+func (c *Challenge) winBy(winner Player) error {
+	if c.winner != (Player{}) {
+		return errors.New("WINNER IS ALREADY SET")
+	}
 	c.winner = winner
 	publishChallengeUpdate(*c)
+	return nil
 }
 
 func (c *Challenge) acceptBy(acceptedBy Player, agreedTime time.Time) error {
@@ -60,8 +64,8 @@ func LoadChallenge(id any,
 	winner Player,
 	isAccepted bool,
 	matchTime *time.Time,
-) *Challenge {
-	return &Challenge{
+) Challenge {
+	return Challenge{
 		Id:         id,
 		challenger: challenger,
 		opponent:   opponent,

@@ -101,6 +101,20 @@ func main() {
 		}
 	})
 
+	router.POST("/challenges/:id/result", func(ctx *gin.Context) {
+		challengeId := ctx.Param("id")
+		var challegeResult usecase.ChallengeResult
+		err := ctx.BindJSON(&challegeResult)
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return
+		}
+		err = challengerManager.AddChallengeResult(ctx, challengeId, challegeResult)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+		}
+	})
+
 	err := router.Run("localhost:8080")
 	if err != nil {
 		panic(err)

@@ -17,9 +17,8 @@ type ChallengeAcceptPayload struct {
 	MatchTime  time.Time `json:"matchTime"`
 }
 
-type ChallengeManager struct {
-	ChallengeRepository db.ChallengeRepository
-	PlayerManager       PlayerManager
+type ChallengeResult struct {
+	WinnerId int `json:"winnerId"`
 }
 
 type ChallengeInfo struct {
@@ -29,6 +28,11 @@ type ChallengeInfo struct {
 	Winner     int        `json:"winnerId,omitempty"`
 	IsAccepted bool       `json:"isAccepted"`
 	MatchTime  *time.Time `json:"matchTime"`
+}
+
+type ChallengeManager struct {
+	ChallengeRepository db.ChallengeRepository
+	PlayerManager       PlayerManager
 }
 
 func NewChallengeInfo(c domain.Challenge) ChallengeInfo {
@@ -86,4 +90,16 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 		return err
 	}
 	return opponent.Accept(&challenge, accept.MatchTime)
+}
+
+func (c ChallengeManager) AddChallengeResult(ctx context.Context, challengeId string, result ChallengeResult) error {
+	challenge, err := c.ChallengeRepository.FindChallenge(ctx, challengeId)
+	if err != nil {
+		return err
+	}
+	winner, err := c.PlayerManager.FindPlayer(ctx, result.WinnerId)
+	if err != nil {
+		return err
+	}
+	return winner.Win(&challenge)
 }

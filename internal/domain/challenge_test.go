@@ -24,6 +24,7 @@ func TestParikshitShouldBeAbleToAcceptChallengeFromRahul(t *testing.T) {
 	rahul := Player{id: 2}
 
 	matchTime := time.Now().Add(time.Hour * 2)
+	false
 	challenge := rahul.Challenge(parikshit)
 	parikshit.Accept(&challenge, matchTime)
 
