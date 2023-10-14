@@ -9,9 +9,10 @@ import (
 )
 
 type PlayerRecord struct {
-	Id     int `bson:"_id"`
-	Losses int `bson:"losses"`
-	Wins   int `bson:"wins"`
+	Id     int    `bson:"_id"`
+	Name   string `bson:"name"`
+	Losses int    `bson:"losses"`
+	Wins   int    `bson:"wins"`
 }
 
 type PlayerRepository struct {
@@ -47,6 +48,7 @@ func (r *PlayerRepository) FetchAll() []domain.Player {
 	for _, playerRecord := range playerRecords {
 		players = append(players, domain.NewPlayer(
 			domain.PlayerId(playerRecord.Id),
+			playerRecord.Name,
 			playerRecord.Wins,
 			playerRecord.Losses),
 		)
@@ -61,5 +63,5 @@ func (r *PlayerRepository) FindPlayer(ctx context.Context, id int) (domain.Playe
 	if err != nil {
 		return domain.Player{}, err
 	}
-	return domain.NewPlayer(domain.PlayerId(record.Id), record.Wins, record.Losses), nil
+	return domain.NewPlayer(domain.PlayerId(record.Id), record.Name, record.Wins, record.Losses), nil
 }

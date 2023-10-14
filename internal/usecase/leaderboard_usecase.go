@@ -13,13 +13,14 @@ type Match struct {
 
 type PlayerDetails struct {
 	Id     int
+	Name   string
 	Wins   int
 	Losses int
 	Rank   int
 }
 
 func AddMatch(ctx context.Context, match *Match) error {
-	
+
 	thisPlayer, err := findPlayerById(match.ThisPlayerId)
 	if err != nil {
 		return err
@@ -47,6 +48,7 @@ func GetPlayerDetails(ctx context.Context, playerId int) (PlayerDetails, error) 
 	leaderBoard := domain.GetLeaderBoard()
 	return PlayerDetails{
 		Id:     playerId,
+		Name:   player.Name(),
 		Wins:   player.Wins(),
 		Losses: player.Losses(),
 		Rank:   leaderBoard.GetRank(player),

@@ -8,6 +8,7 @@ type PlayerId int
 
 type Player struct {
 	id     PlayerId
+	name   string
 	wins   int
 	losses int
 }
@@ -20,8 +21,12 @@ func (player *Player) WinAgainst(loser *Player) {
 	publishPlayerUpdate(*loser)
 }
 
-func NewPlayer(id PlayerId, wins, looses int) Player {
-	return Player{id, wins, looses}
+func NewPlayer(id PlayerId, name string, wins, looses int) Player {
+	return Player{id, name, wins, looses}
+}
+
+func (player *Player) Name() string {
+	return player.name
 }
 
 func (player *Player) Wins() int {
