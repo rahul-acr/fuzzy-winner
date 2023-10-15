@@ -12,11 +12,11 @@ type Match struct {
 }
 
 type PlayerDetails struct {
-	Id     int
-	Name   string
-	Wins   int
-	Losses int
-	Rank   int
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Wins   int    `json:"wins"`
+	Losses int    `json:"losses"`
+	Rank   int    `json:"rank"`
 }
 
 func AddMatch(ctx context.Context, match *Match) error {
@@ -59,4 +59,19 @@ func findPlayerById(id int) (domain.Player, error) {
 	playerId := domain.PlayerId(id)
 	leaderBoard := domain.GetLeaderBoard()
 	return leaderBoard.FindPlayer(playerId)
+}
+
+func GetLeaderBoard() []PlayerDetails {
+	topPlayers := domain.GetLeaderBoard().Players()
+	playerDetails := make([]PlayerDetails, len(topPlayers))
+	for rank, player := range topPlayers {
+		playerDetails[rank] = PlayerDetails{
+			Id:     int(player.Id()),
+			Name:   player.Name(),
+			Wins:   player.Wins(),
+			Losses: player.Losses(),
+			Rank:   rank + 1,
+		}
+	}
+	return playerDetails
 }

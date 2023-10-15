@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// TODO: make it immutable ?
 type Challenge struct {
 	Id         any
 	challenger Player

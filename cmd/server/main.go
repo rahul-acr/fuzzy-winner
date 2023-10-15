@@ -27,7 +27,14 @@ func main() {
 
 	playerManager := usecase.PlayerManager{PlayerRepository: *playerRepo}
 	challengerManager := usecase.ChallengeManager{ChallengeRepository: *challengeRepo, PlayerManager: playerManager}
+
 	router := gin.Default()
+	router.Use(CORSMiddleware())
+
+	router.GET("/leaderboard", func(ctx *gin.Context) {
+		playerDetails := usecase.GetLeaderBoard()
+		ctx.JSON(http.StatusOK, playerDetails)
+	})
 
 	router.GET("/players/:id", func(ctx *gin.Context) {
 		playerId, err := strconv.Atoi(ctx.Param("id"))
@@ -118,5 +125,21 @@ func main() {
 	err := router.Run("localhost:8080")
 	if err != nil {
 		panic(err)
+	}
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
 	}
 }

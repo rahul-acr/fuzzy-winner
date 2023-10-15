@@ -70,3 +70,7 @@ func (board *LeaderBoard) findPlayerById(playerId PlayerId) *Player {
 	}
 	return nil
 }
+
+func (board *LeaderBoard) Players() []Player {
+	return board.players
+}
