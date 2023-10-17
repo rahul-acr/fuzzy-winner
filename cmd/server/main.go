@@ -17,6 +17,7 @@ func main() {
 	database := client.Database("quickbat")
 	playerRepo := db.NewPlayerRepository(database.Collection("players"))
 	challengeRepo := db.NewChallengeRepository(database.Collection("challenges"), playerRepo)
+	matchRepo := db.NewMatchRepository(database.Collection("matches"))
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 
@@ -27,6 +28,7 @@ func main() {
 
 	playerManager := usecase.PlayerManager{PlayerRepository: *playerRepo}
 	challengerManager := usecase.ChallengeManager{ChallengeRepository: *challengeRepo, PlayerManager: playerManager}
+	matchManager := usecase.MatchManager{MatchRepo: matchRepo}
 
 	router := gin.Default()
 	router.Use(CORSMiddleware())
@@ -51,13 +53,13 @@ func main() {
 	})
 
 	router.POST("/matches", func(ctx *gin.Context) {
-		var match usecase.Match
-		err := ctx.BindJSON(&match)
+		var matchPayload usecase.MatchPayload
+		err := ctx.BindJSON(&matchPayload)
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		err = usecase.AddMatch(ctx, &match)
+		err = matchManager.AddMatch(ctx, matchPayload)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return

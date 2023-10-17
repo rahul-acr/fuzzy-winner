@@ -13,6 +13,12 @@ type Player struct {
 	losses int
 }
 
+type Match struct {
+	Id     any
+	Winner Player
+	Loser  Player
+}
+
 func (player *Player) WinAgainst(loser *Player) {
 	player.wins += 1
 	loser.losses += 1

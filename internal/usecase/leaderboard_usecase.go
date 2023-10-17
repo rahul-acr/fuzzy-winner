@@ -2,10 +2,11 @@ package usecase
 
 import (
 	"context"
+	"tv/quick-bat/internal/db"
 	"tv/quick-bat/internal/domain"
 )
 
-type Match struct {
+type MatchPayload struct {
 	ThisPlayerId  int  `json:"thisPlayerId"`
 	OtherPlayerId int  `json:"otherPlayerId"`
 	Win           bool `json:"win"`
@@ -19,22 +20,33 @@ type PlayerDetails struct {
 	Rank   int    `json:"rank"`
 }
 
-func AddMatch(ctx context.Context, match *Match) error {
+type MatchManager struct {
+	MatchRepo db.MatchRepository
+}
 
-	thisPlayer, err := findPlayerById(match.ThisPlayerId)
+func (m MatchManager) AddMatch(ctx context.Context, matchPayload MatchPayload) error {
+	thisPlayer, err := findPlayerById(matchPayload.ThisPlayerId)
 	if err != nil {
 		return err
 	}
 
-	otherPlayer, err := findPlayerById(match.OtherPlayerId)
+	otherPlayer, err := findPlayerById(matchPayload.OtherPlayerId)
 	if err != nil {
 		return err
 	}
 
-	if match.Win {
+	var match domain.Match
+	if matchPayload.Win {
 		thisPlayer.WinAgainst(&otherPlayer)
+		match = domain.Match{Winner: thisPlayer, Loser: otherPlayer}
 	} else {
 		otherPlayer.WinAgainst(&thisPlayer)
+		match = domain.Match{Loser: thisPlayer, Winner: otherPlayer}
+	}
+
+	match, err = m.MatchRepo.Add(ctx, match)
+	if err != nil {
+		return err
 	}
 
 	return nil
