@@ -25,12 +25,12 @@ type MatchManager struct {
 }
 
 func (m MatchManager) AddMatch(ctx context.Context, matchPayload MatchPayload) error {
-	thisPlayer, err := findPlayerById(matchPayload.ThisPlayerId)
+	thisPlayer, err := m.findPlayerById(matchPayload.ThisPlayerId)
 	if err != nil {
 		return err
 	}
 
-	otherPlayer, err := findPlayerById(matchPayload.OtherPlayerId)
+	otherPlayer, err := m.findPlayerById(matchPayload.OtherPlayerId)
 	if err != nil {
 		return err
 	}
@@ -52,8 +52,8 @@ func (m MatchManager) AddMatch(ctx context.Context, matchPayload MatchPayload) e
 	return nil
 }
 
-func GetPlayerDetails(ctx context.Context, playerId int) (PlayerDetails, error) {
-	player, err := findPlayerById(playerId)
+func (m MatchManager) GetPlayerDetails(playerId int) (PlayerDetails, error) {
+	player, err := m.findPlayerById(playerId)
 	if err != nil {
 		return PlayerDetails{}, err
 	}
@@ -67,13 +67,13 @@ func GetPlayerDetails(ctx context.Context, playerId int) (PlayerDetails, error) 
 	}, nil
 }
 
-func findPlayerById(id int) (domain.Player, error) {
+func (m MatchManager) findPlayerById(id int) (domain.Player, error) {
 	playerId := domain.PlayerId(id)
 	leaderBoard := domain.GetLeaderBoard()
 	return leaderBoard.FindPlayer(playerId)
 }
 
-func GetLeaderBoard() []PlayerDetails {
+func (m MatchManager) GetLeaderBoard() []PlayerDetails {
 	topPlayers := domain.GetLeaderBoard().Players()
 	playerDetails := make([]PlayerDetails, len(topPlayers))
 	for rank, player := range topPlayers {

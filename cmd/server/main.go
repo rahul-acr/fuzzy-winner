@@ -34,7 +34,7 @@ func main() {
 	router.Use(CORSMiddleware())
 
 	router.GET("/leaderboard", func(ctx *gin.Context) {
-		playerDetails := usecase.GetLeaderBoard()
+		playerDetails := matchManager.GetLeaderBoard()
 		ctx.JSON(http.StatusOK, playerDetails)
 	})
 
@@ -44,7 +44,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		playerDetails, err := usecase.GetPlayerDetails(ctx, playerId)
+		playerDetails, err := matchManager.GetPlayerDetails(playerId)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return
