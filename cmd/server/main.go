@@ -91,7 +91,7 @@ func main() {
 			ctx.Status(http.StatusInternalServerError)
 			return
 		}
-		ctx.JSON(http.StatusCreated, challenges)
+		ctx.JSON(http.StatusOK, challenges)
 	})
 
 	router.POST("/challenges/:id/accept", func(ctx *gin.Context) {

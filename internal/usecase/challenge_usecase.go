@@ -13,8 +13,8 @@ type ChallengeCreatePayload struct {
 }
 
 type ChallengeAcceptPayload struct {
-	OpponentId int       `json:"opponentId"`
-	MatchTime  time.Time `json:"matchTime"`
+	OpponentId int    `json:"opponentId"`
+	MatchTime  string `json:"matchTime"`
 }
 
 type ChallengeResult struct {
@@ -22,12 +22,17 @@ type ChallengeResult struct {
 }
 
 type ChallengeInfo struct {
-	Id         any        `json:"id"`
-	Challenger int        `json:"challengerId"`
-	Opponent   int        `json:"opponentId"`
-	Winner     int        `json:"winnerId,omitempty"`
-	IsAccepted bool       `json:"isAccepted"`
-	MatchTime  *time.Time `json:"matchTime"`
+	Id         any              `json:"id"`
+	Challenger ChallengePlayer  `json:"challenger"`
+	Opponent   ChallengePlayer  `json:"opponent"`
+	Winner     *ChallengePlayer `json:"winner,omitempty"`
+	IsAccepted bool             `json:"isAccepted"`
+	MatchTime  *time.Time       `json:"matchTime"`
+}
+
+type ChallengePlayer struct {
+	PlayerId int    `json:"id"`
+	Name     string `json:"name"`
 }
 
 type ChallengeManager struct {
@@ -41,13 +46,13 @@ func NewChallengeInfo(c domain.Challenge) ChallengeInfo {
 
 	cInfo := ChallengeInfo{
 		Id:         c.Id,
-		Challenger: int(challenger.Id()),
-		Opponent:   int(opponent.Id()),
+		Challenger: ChallengePlayer{int(challenger.Id()), challenger.Name()},
+		Opponent:   ChallengePlayer{int(opponent.Id()), opponent.Name()},
 	}
 
 	winner := c.Winner()
 	if (winner != domain.Player{}) {
-		cInfo.Winner = int(winner.Id())
+		cInfo.Winner = &ChallengePlayer{int(winner.Id()), winner.Name()}
 	}
 
 	cInfo.MatchTime = c.Time()
@@ -81,6 +86,10 @@ func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId i
 }
 
 func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, accept ChallengeAcceptPayload) error {
+	matchTime, err := time.Parse("2006-01-02T15:04", accept.MatchTime)
+	if err != nil {
+		return err
+	}
 	challenge, err := c.ChallengeRepository.FindChallenge(ctx, challengeId)
 	if err != nil {
 		return err
@@ -89,7 +98,7 @@ func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, 
 	if err != nil {
 		return err
 	}
-	return opponent.Accept(&challenge, accept.MatchTime)
+	return opponent.Accept(&challenge, matchTime)
 }
 
 func (c ChallengeManager) AddChallengeResult(ctx context.Context, challengeId string, result ChallengeResult) error {
