@@ -7,9 +7,17 @@ import (
 )
 
 type MatchPayload struct {
-	ThisPlayerId  int  `json:"thisPlayerId"`
-	OtherPlayerId int  `json:"otherPlayerId"`
-	Win           bool `json:"win"`
+	MatchId  string `json:"matchId"`
+	WinnerId int    `json:"winnerId"`
+	LoserId  int    `json:"loserId"`
+}
+
+type MatchData struct {
+	MatchId    any    `json:"matchId"`
+	WinnerId   int    `json:"winnerId"`
+	WinnerName string `json:"winnerName"`
+	LoserId    int    `json:"loserId"`
+	LoserName  string `json:"loserName"`
 }
 
 type PlayerDetails struct {
@@ -25,24 +33,18 @@ type MatchManager struct {
 }
 
 func (m MatchManager) AddMatch(ctx context.Context, matchPayload MatchPayload) error {
-	thisPlayer, err := m.findPlayerById(matchPayload.ThisPlayerId)
+	winner, err := m.findPlayerById(matchPayload.WinnerId)
 	if err != nil {
 		return err
 	}
 
-	otherPlayer, err := m.findPlayerById(matchPayload.OtherPlayerId)
+	loser, err := m.findPlayerById(matchPayload.LoserId)
 	if err != nil {
 		return err
 	}
 
-	var match domain.Match
-	if matchPayload.Win {
-		thisPlayer.WinAgainst(&otherPlayer)
-		match = domain.Match{Winner: thisPlayer, Loser: otherPlayer}
-	} else {
-		otherPlayer.WinAgainst(&thisPlayer)
-		match = domain.Match{Loser: thisPlayer, Winner: otherPlayer}
-	}
+	winner.WinAgainst(&loser)
+	match := domain.Match{Winner: winner, Loser: loser}
 
 	match, err = m.MatchRepo.Add(ctx, match)
 	if err != nil {
@@ -86,4 +88,23 @@ func (m MatchManager) GetLeaderBoard() []PlayerDetails {
 		}
 	}
 	return playerDetails
+}
+
+func (m MatchManager) FetchMatchesOfPlayer(ctx context.Context, playerId int) ([]MatchData, error) {
+	matches, err := m.MatchRepo.FindMatchesOf(ctx, domain.PlayerId(playerId))
+	if err != nil {
+		return nil, err
+	}
+	matchData := make([]MatchData, len(matches))
+	for i, match := range matches {
+		matchData[i] = MatchData{
+			MatchId:    match.Id,
+			WinnerId:   int(match.Winner.Id()),
+			WinnerName: match.Winner.Name(),
+			LoserId:    int(match.Loser.Id()),
+			LoserName:  match.Loser.Name(),
+		}
+	}
+
+	return matchData, nil
 }

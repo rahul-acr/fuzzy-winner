@@ -17,7 +17,7 @@ func main() {
 	database := client.Database("quickbat")
 	playerRepo := db.NewPlayerRepository(database.Collection("players"))
 	challengeRepo := db.NewChallengeRepository(database.Collection("challenges"), playerRepo)
-	matchRepo := db.NewMatchRepository(database.Collection("matches"))
+	matchRepo := db.NewMatchRepository(database.Collection("matches"), playerRepo)
 
 	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
 
@@ -65,6 +65,20 @@ func main() {
 			return
 		}
 		ctx.Status(http.StatusCreated)
+	})
+
+	router.GET("/players/:id/matches", func(ctx *gin.Context) {
+		playerId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return
+		}
+		matches, err := matchManager.FetchMatchesOfPlayer(ctx, playerId)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
+		ctx.JSON(http.StatusOK, matches)
 	})
 
 	router.POST("/challenges", func(ctx *gin.Context) {

@@ -2,13 +2,15 @@ package db
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"tv/quick-bat/internal/domain"
 )
 
 type MatchRepository struct {
-	collection *mongo.Collection
+	collection       *mongo.Collection
+	playerRepository *PlayerRepository
 }
 
 type MatchRecord struct {
@@ -17,8 +19,8 @@ type MatchRecord struct {
 	LoserId  int                `bson:"loserId"`
 }
 
-func NewMatchRepository(collection *mongo.Collection) MatchRepository {
-	return MatchRepository{collection: collection}
+func NewMatchRepository(collection *mongo.Collection, playerRepository *PlayerRepository) MatchRepository {
+	return MatchRepository{collection: collection, playerRepository: playerRepository}
 }
 
 func (c MatchRepository) Add(ctx context.Context, match domain.Match) (domain.Match, error) {
@@ -32,4 +34,43 @@ func (c MatchRepository) Add(ctx context.Context, match domain.Match) (domain.Ma
 	}
 	match.Id = result.InsertedID
 	return match, nil
+}
+
+func (c MatchRepository) FindMatchesOf(ctx context.Context, playerId domain.PlayerId) ([]domain.Match, error) {
+	cursor, err := c.collection.Find(ctx, bson.D{
+		{"$or", bson.A{
+			bson.D{{"winnerId", int(playerId)}},
+			bson.D{{"loserId", int(playerId)}},
+		}},
+	})
+	var records []MatchRecord
+	if err = cursor.All(ctx, &records); err != nil {
+		return nil, err
+	}
+
+	matches := make([]domain.Match, len(records))
+	for i, r := range records {
+		match, err := c.recordToMatch(ctx, r)
+		if err != nil {
+			return nil, err
+		}
+		matches[i] = match
+	}
+	return matches, nil
+}
+
+func (c MatchRepository) recordToMatch(ctx context.Context, record MatchRecord) (domain.Match, error) {
+	winner, err := c.playerRepository.FindPlayer(ctx, record.WinnerId)
+	if err != nil {
+		return domain.Match{}, nil
+	}
+	loser, err := c.playerRepository.FindPlayer(ctx, record.LoserId)
+	if err != nil {
+		return domain.Match{}, nil
+	}
+	return domain.Match{
+		Id:     record.Id,
+		Winner: winner,
+		Loser:  loser,
+	}, nil
 }
