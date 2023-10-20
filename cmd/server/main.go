@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"tv/quick-bat/internal/db"
@@ -19,7 +20,7 @@ func main() {
 	challengeRepo := db.NewChallengeRepository(database.Collection("challenges"), playerRepo)
 	matchRepo := db.NewMatchRepository(database.Collection("matches"), playerRepo)
 
-	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll())
+	domain.MainLeaderBoard = domain.NewLeaderBoard(playerRepo.FetchAll(context.TODO()))
 
 	// TODO move this to appropriate packages
 	domain.AddChallengeChangeListener(challengeRepo.Update)
@@ -50,6 +51,18 @@ func main() {
 			return
 		}
 		ctx.JSON(http.StatusOK, &playerDetails)
+	})
+
+	router.GET("/players", func(ctx *gin.Context) {
+		players := playerManager.FindPlayers(ctx)
+		playerInfos := make([]usecase.PlayerInfoShort, len(players))
+		for i, p := range players {
+			playerInfos[i] = usecase.PlayerInfoShort{
+				PlayerId: p.Id(),
+				Name:     p.Name(),
+			}
+		}
+		ctx.JSON(http.StatusOK, &playerInfos)
 	})
 
 	router.POST("/matches", func(ctx *gin.Context) {
@@ -138,7 +151,7 @@ func main() {
 		}
 	})
 
-	err := router.Run("localhost:8080")
+	err := router.Run("192.168.0.105:8080")
 	if err != nil {
 		panic(err)
 	}

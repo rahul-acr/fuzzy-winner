@@ -23,7 +23,7 @@ func NewPlayerRepository(collection *mongo.Collection) *PlayerRepository {
 	return &PlayerRepository{collection: collection}
 }
 
-func (r *PlayerRepository) Update(player domain.Player) {
+func (r PlayerRepository) Update(player domain.Player) {
 	update := bson.D{{Key: "$set", Value: bson.D{
 		{Key: "wins", Value: player.Wins()},
 		{Key: "losses", Value: player.Losses()},
@@ -34,14 +34,14 @@ func (r *PlayerRepository) Update(player domain.Player) {
 	}
 }
 
-func (r *PlayerRepository) FetchAll() []domain.Player {
-	cursor, err := r.collection.Find(context.TODO(), bson.D{})
+func (r PlayerRepository) FetchAll(ctx context.Context) []domain.Player {
+	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil
 	}
 
 	var playerRecords []PlayerRecord
-	if err = cursor.All(context.TODO(), &playerRecords); err != nil {
+	if err = cursor.All(ctx, &playerRecords); err != nil {
 		panic(err)
 	}
 	var players []domain.Player
@@ -57,7 +57,7 @@ func (r *PlayerRepository) FetchAll() []domain.Player {
 	return players
 }
 
-func (r *PlayerRepository) FindPlayer(ctx context.Context, id int) (domain.Player, error) {
+func (r PlayerRepository) FindPlayer(ctx context.Context, id int) (domain.Player, error) {
 	var record PlayerRecord
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&record)
 	if err != nil {
