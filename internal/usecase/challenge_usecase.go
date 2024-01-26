@@ -18,7 +18,8 @@ type ChallengeAcceptPayload struct {
 }
 
 type ChallengeResult struct {
-	WinnerId int `json:"winnerId"`
+	PlayerId int  `json:"playerId"`
+	Won      bool `json:"won"`
 }
 
 type ChallengeInfo struct {
@@ -106,9 +107,15 @@ func (c ChallengeManager) AddChallengeResult(ctx context.Context, challengeId st
 	if err != nil {
 		return err
 	}
-	winner, err := c.PlayerManager.FindPlayer(ctx, result.WinnerId)
+	player, err := c.PlayerManager.FindPlayer(ctx, result.PlayerId)
 	if err != nil {
 		return err
 	}
-	return winner.Win(&challenge)
+
+	if result.Won {
+		return player.Win(&challenge)
+	} else {
+		return player.Lose(&challenge)
+	}
+
 }

@@ -142,11 +142,13 @@ func main() {
 		var challegeResult usecase.ChallengeResult
 		err := ctx.BindJSON(&challegeResult)
 		if err != nil {
+			println(err)
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
 		err = challengerManager.AddChallengeResult(ctx, challengeId, challegeResult)
 		if err != nil {
+			println(err.Error())
 			ctx.Status(http.StatusInternalServerError)
 		}
 	})

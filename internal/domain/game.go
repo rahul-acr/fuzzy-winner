@@ -59,3 +59,8 @@ func (player *Player) Win(challenge *Challenge) error {
 	player.WinAgainst(&challenge.opponent)
 	return challenge.winBy(*player)
 }
+
+func (player *Player) Lose(challenge *Challenge) error {
+	challenge.opponent.WinAgainst(player)
+	return challenge.winBy(challenge.opponent)
+}
