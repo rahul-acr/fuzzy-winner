@@ -2,10 +2,11 @@ package db
 
 import (
 	"context"
+	"tv/quick-bat/internal/domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"tv/quick-bat/internal/domain"
 )
 
 type MatchRepository struct {
@@ -38,9 +39,9 @@ func (c MatchRepository) Add(ctx context.Context, match domain.Match) (domain.Ma
 
 func (c MatchRepository) FindMatchesOf(ctx context.Context, playerId domain.PlayerId) ([]domain.Match, error) {
 	cursor, err := c.collection.Find(ctx, bson.D{
-		{"$or", bson.A{
-			bson.D{{"winnerId", int(playerId)}},
-			bson.D{{"loserId", int(playerId)}},
+		{Key: "$or", Value: bson.A{
+			bson.D{{Key: "winnerId", Value: int(playerId)}},
+			bson.D{{Key: "loserId", Value: int(playerId)}},
 		}},
 	})
 	var records []MatchRecord
