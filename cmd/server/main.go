@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"strconv"
 	"tv/quick-bat/internal/db"
@@ -109,7 +110,7 @@ func main() {
 		ctx.JSON(http.StatusCreated, usecase.NewChallengeInfo(createdChallenge))
 	})
 
-	router.GET("/players/:id/challenges", func(ctx *gin.Context) {
+	router.GET("/players/:id/challenges/received", func(ctx *gin.Context) {
 		playerId, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
@@ -117,6 +118,21 @@ func main() {
 		}
 		challenges, err := challengerManager.FindChallengsForPlayer(ctx, playerId)
 		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
+		ctx.JSON(http.StatusOK, challenges)
+	})
+
+	router.GET("/players/:id/challenges/created", func(ctx *gin.Context) {
+		playerId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+			return
+		}
+		challenges, err := challengerManager.FindChallengsByPlayer(ctx, playerId)
+		if err != nil {
+			println(err.Error())
 			ctx.Status(http.StatusInternalServerError)
 			return
 		}
@@ -131,6 +147,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
+		io.Writer()
 		err = challengerManager.AcceptChallenge(ctx, challengeId, challengeAccept)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)

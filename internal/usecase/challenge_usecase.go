@@ -86,6 +86,18 @@ func (c ChallengeManager) FindChallengsForPlayer(ctx context.Context, playerId i
 	return challengeInfos, nil
 }
 
+func (c ChallengeManager) FindChallengsByPlayer(ctx context.Context, playerId int) ([]ChallengeInfo, error) {
+	challenges, err := c.ChallengeRepository.FindChallengesByPlayer(ctx, playerId)
+	if err != nil {
+		return nil, err
+	}
+	challengeInfos := make([]ChallengeInfo, len(challenges))
+	for i, r := range challenges {
+		challengeInfos[i] = NewChallengeInfo(r)
+	}
+	return challengeInfos, nil
+}
+
 func (c ChallengeManager) AcceptChallenge(ctx context.Context, challengeId any, accept ChallengeAcceptPayload) error {
 	matchTime, err := time.Parse("2006-01-02T15:04", accept.MatchTime)
 	if err != nil {

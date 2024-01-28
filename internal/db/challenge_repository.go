@@ -97,6 +97,29 @@ func (c *ChallengeRepository) FindChallengesForPlayer(ctx context.Context, playe
 	return challenges, nil
 }
 
+func (c *ChallengeRepository) FindChallengesByPlayer(ctx context.Context, playerId any) ([]domain.Challenge, error) {
+	cursor, err := c.collection.Find(ctx, bson.M{"challengerId": playerId.(int)})
+	if err != nil {
+		return nil, err
+	}
+
+	var records []ChallengeRecord
+	if err = cursor.All(ctx, &records); err != nil {
+		return nil, err
+	}
+
+	var challenges []domain.Challenge
+	for _, r := range records {
+		challenge, err := c.challengeFromRecord(ctx, r)
+		if err != nil {
+			return nil, err
+		}
+		challenges = append(challenges, challenge)
+	}
+
+	return challenges, nil
+}
+
 func (c *ChallengeRepository) challengeFromRecord(ctx context.Context, record ChallengeRecord) (domain.Challenge, error) {
 	challenger, err := c.playerRepository.FindPlayer(ctx, record.ChallengerId)
 	if err != nil {
