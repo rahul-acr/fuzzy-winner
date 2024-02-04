@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"strconv"
 	"tv/quick-bat/internal/db"
@@ -147,7 +146,7 @@ func main() {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		io.Writer()
+
 		err = challengerManager.AcceptChallenge(ctx, challengeId, challengeAccept)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
